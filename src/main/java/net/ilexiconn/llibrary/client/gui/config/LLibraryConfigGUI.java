@@ -13,7 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.ArrayList;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class LLibraryConfigGUI extends ConfigGUI {
     private static final List<ConfigProperty> GENERAL_PROPERTIES = new ArrayList<>();
     private static final List<ConfigProperty> APPEARANCE_PROPERTIES = new ArrayList<>();

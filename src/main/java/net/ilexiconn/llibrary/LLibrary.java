@@ -16,21 +16,16 @@ import net.ilexiconn.llibrary.server.network.PropertiesMessage;
 import net.ilexiconn.llibrary.server.network.SnackbarMessage;
 import net.ilexiconn.llibrary.server.network.SurvivalTabMessage;
 import net.ilexiconn.llibrary.server.world.TickRateHandler;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.event.lifecycle.FMLFingerprintViolationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,14 +34,14 @@ import java.io.File;
 import java.util.Map;
 
 @Mod(
-        modid = "llibrary",
-        name = "LLibrary",
+        "llibrary"
+        /*name = "LLibrary",
         version = LLibrary.VERSION,
         acceptedMinecraftVersions = "1.12.2",
         certificateFingerprint = "${fingerprint}",
         guiFactory = "net.ilexiconn.llibrary.client.gui.LLibraryGUIFactory",
         updateJSON = "https://gist.githubusercontent.com/gegy1000/a6639456aeb8edd92cbf7cbfcf9d65d9/raw/llibrary_updates.json",
-        dependencies = "required-after:forge@[14.23.3.2655,)"
+        dependencies = "required-after:forge@[14.23.3.2655,)"*/
 )
 public class LLibrary {
     public static final String VERSION = "1.7.15";
@@ -54,7 +49,6 @@ public class LLibrary {
     public static final Logger LOGGER = LogManager.getLogger("LLibrary");
     @SidedProxy(serverSide = "net.ilexiconn.llibrary.server.ServerProxy", clientSide = "net.ilexiconn.llibrary.client.ClientProxy")
     public static ServerProxy PROXY;
-    @Mod.Instance("llibrary")
     public static LLibrary INSTANCE;
     @CapabilityInject(IEntityDataCapability.class)
     public static Capability<IEntityDataCapability> ENTITY_DATA_CAPABILITY;
@@ -74,13 +68,21 @@ public class LLibrary {
         }
     }
 
+    private LLibrary() {
+        INSTANCE = this;
+    }
+
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
         if (!LLibrary.LLIBRARY_ROOT.exists()) {
             LLibrary.LLIBRARY_ROOT.mkdirs();
         }
 
-        for (ModContainer mod : Loader.instance().getModList()) {
+        ModList.get().forEachModFile(file -> {
+            file.compileContent() // TODO
+        });
+        for (ModContainer mod : ModList.get().getMods()) {
+
             ConfigHandler.INSTANCE.injectConfig(mod, event.getAsmData());
             NetworkHandler.INSTANCE.injectNetworkWrapper(mod, event.getAsmData());
         }
@@ -106,19 +108,19 @@ public class LLibrary {
 
     static class CoreAPIHandler implements LLibraryCoreAPI {
         @Override
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public void addRemoteLocalizations(String language, Map<String, String> properties) {
             LanguageHandler.INSTANCE.addRemoteLocalizations(language, properties);
         }
 
         @Override
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public void provideStackContext(@Nonnull ItemStack stack) {
             ItemTESRContext.INSTANCE.provideStackContext(stack);
         }
 
         @Override
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public void providePerspectiveContext(@Nonnull ItemCameraTransforms.TransformType transform) {
             ItemTESRContext.INSTANCE.providePerspectiveContext(transform);
         }

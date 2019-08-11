@@ -37,10 +37,10 @@ public enum NetworkHandler {
     public <T extends AbstractMessage<T> & IMessageHandler<T, IMessage>> void registerMessage(SimpleNetworkWrapper networkWrapper, Class<T> clazz) {
         try {
             AbstractMessage<T> message = clazz.getDeclaredConstructor().newInstance();
-            if (message.registerOnSide(Side.CLIENT)) {
+            if (message.registerOnSide(Dist.CLIENT)) {
                 this.registerMessage(networkWrapper, clazz, Side.CLIENT);
             }
-            if (message.registerOnSide(Side.SERVER)) {
+            if (message.registerOnSide(Dist.SERVER)) {
                 this.registerMessage(networkWrapper, clazz, Side.SERVER);
             }
         } catch (ReflectiveOperationException e) {
