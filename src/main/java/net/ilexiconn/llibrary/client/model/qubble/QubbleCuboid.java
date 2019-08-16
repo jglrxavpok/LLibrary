@@ -62,14 +62,14 @@ public class QubbleCuboid implements INBTSerializable<NBTTagCompound> {
         compound.setString("name", this.name);
         NBTTagList childrenTag = new NBTTagList();
         for (QubbleCuboid cuboid : this.children) {
-            childrenTag.appendTag(cuboid.serializeNBT());
+            childrenTag.add(cuboid.serializeNBT());
         }
         compound.setTag("children", childrenTag);
         if (this.dimensionX != 1 || this.dimensionY != 1 || this.dimensionZ != 1) {
             NBTTagCompound dimensionTag = new NBTTagCompound();
-            dimensionTag.setInteger("x", this.dimensionX);
-            dimensionTag.setInteger("y", this.dimensionY);
-            dimensionTag.setInteger("z", this.dimensionZ);
+            dimensionTag.setInt("x", this.dimensionX);
+            dimensionTag.setInt("y", this.dimensionY);
+            dimensionTag.setInt("z", this.dimensionZ);
             compound.setTag("dimension", dimensionTag);
         }
         if (this.positionX != 0.0F || this.positionY != 0.0F || this.positionZ != 0.0F) {
@@ -102,8 +102,8 @@ public class QubbleCuboid implements INBTSerializable<NBTTagCompound> {
         }
         if (this.textureX != 0 || this.textureY != 0 || this.textureMirrored) {
             NBTTagCompound textureTag = new NBTTagCompound();
-            textureTag.setInteger("x", this.textureX);
-            textureTag.setInteger("y", this.textureY);
+            textureTag.setInt("x", this.textureX);
+            textureTag.setInt("y", this.textureY);
             textureTag.setBoolean("mirrored", this.textureMirrored);
             compound.setTag("texture", textureTag);
         }
@@ -118,46 +118,46 @@ public class QubbleCuboid implements INBTSerializable<NBTTagCompound> {
     public void deserializeNBT(NBTTagCompound compound) {
         this.name = compound.getString("name");
         this.children = new ArrayList<>();
-        NBTTagList childrenTag = compound.getTagList("children", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < childrenTag.tagCount(); i++) {
+        NBTTagList childrenTag = compound.getList("children", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < childrenTag.size(); i++) {
             QubbleCuboid cuboid = new QubbleCuboid();
-            cuboid.deserializeNBT(childrenTag.getCompoundTagAt(i));
+            cuboid.deserializeNBT(childrenTag.getCompound(i));
             this.children.add(cuboid);
         }
         if (compound.hasKey("dimension")) {
-            NBTTagCompound dimensionTag = compound.getCompoundTag("dimension");
-            this.dimensionX = dimensionTag.getInteger("x");
-            this.dimensionY = dimensionTag.getInteger("y");
-            this.dimensionZ = dimensionTag.getInteger("z");
+            NBTTagCompound dimensionTag = compound.getCompound("dimension");
+            this.dimensionX = dimensionTag.getInt("x");
+            this.dimensionY = dimensionTag.getInt("y");
+            this.dimensionZ = dimensionTag.getInt("z");
         }
         if (compound.hasKey("position")) {
-            NBTTagCompound positionTag = compound.getCompoundTag("position");
+            NBTTagCompound positionTag = compound.getCompound("position");
             this.positionX = positionTag.getFloat("x");
             this.positionY = positionTag.getFloat("y");
             this.positionZ = positionTag.getFloat("z");
         }
         if (compound.hasKey("offset")) {
-            NBTTagCompound offsetTag = compound.getCompoundTag("offset");
+            NBTTagCompound offsetTag = compound.getCompound("offset");
             this.offsetX = offsetTag.getFloat("x");
             this.offsetY = offsetTag.getFloat("y");
             this.offsetZ = offsetTag.getFloat("z");
         }
         if (compound.hasKey("rotation")) {
-            NBTTagCompound rotationTag = compound.getCompoundTag("rotation");
+            NBTTagCompound rotationTag = compound.getCompound("rotation");
             this.rotationX = rotationTag.getFloat("x");
             this.rotationY = rotationTag.getFloat("y");
             this.rotationZ = rotationTag.getFloat("z");
         }
         if (compound.hasKey("scale")) {
-            NBTTagCompound scaleTag = compound.getCompoundTag("scale");
+            NBTTagCompound scaleTag = compound.getCompound("scale");
             this.scaleX = scaleTag.getFloat("x");
             this.scaleY = scaleTag.getFloat("y");
             this.scaleZ = scaleTag.getFloat("z");
         }
         if (compound.hasKey("texture")) {
-            NBTTagCompound textureTag = compound.getCompoundTag("texture");
-            this.textureX = textureTag.getInteger("x");
-            this.textureY = textureTag.getInteger("y");
+            NBTTagCompound textureTag = compound.getCompound("texture");
+            this.textureX = textureTag.getInt("x");
+            this.textureY = textureTag.getInt("y");
             this.textureMirrored = textureTag.getBoolean("mirrored");
         }
         if (compound.hasKey("identifier")) {

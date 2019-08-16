@@ -4,8 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
@@ -56,7 +55,7 @@ public class ModUtils {
     public static String getModNameForItem(Item item) {
         ResourceLocation resourceLocation = ITEM_REGISTRY.getKey(item);
         if (resourceLocation != null) {
-            String modID = resourceLocation.getResourceDomain();
+            String modID = resourceLocation.getNamespace();
             String resourceID = modID.toLowerCase(Locale.ENGLISH);
             return ModUtils.getNameForResourceID(resourceID);
         }
@@ -68,7 +67,7 @@ public class ModUtils {
      * @return the mod name
      */
     public static String getNameForResourceID(String resourceID) {
-        return ModUtils.resourceIDToContainerMap.get(resourceID).getName();
+        return ModUtils.resourceIDToContainerMap.get(resourceID).getModInfo().getDisplayName();
     }
 
     /**
@@ -97,7 +96,7 @@ public class ModUtils {
     public static ModContainer getContainerForItem(Item item) {
         ResourceLocation resourceLocation = ITEM_REGISTRY.getKey(item);
         if (resourceLocation != null) {
-            String modID = resourceLocation.getResourceDomain();
+            String modID = resourceLocation.getNamespace();
             String resourceID = modID.toLowerCase(Locale.ENGLISH);
             return ModUtils.getContainerForResourceID(resourceID);
         }

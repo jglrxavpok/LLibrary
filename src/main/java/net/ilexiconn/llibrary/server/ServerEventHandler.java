@@ -15,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
@@ -24,8 +25,8 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.lang.reflect.Constructor;
@@ -178,15 +179,15 @@ public enum ServerEventHandler {
 
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
-        if (!event.getWorld().isRemote) {
-            WorldDataHandler.INSTANCE.loadWorldData(event.getWorld().getSaveHandler(), event.getWorld());
+        if (!event.getWorld().isRemote()) {
+            WorldDataHandler.INSTANCE.loadWorldData(event.getWorld().getSaveHandler(), (World) event.getWorld());
         }
     }
 
     @SubscribeEvent
     public void onWorldSave(WorldEvent.Save event) {
-        if (!event.getWorld().isRemote) {
-            WorldDataHandler.INSTANCE.saveWorldData(event.getWorld().getSaveHandler(), event.getWorld());
+        if (!event.getWorld().isRemote()) {
+            WorldDataHandler.INSTANCE.saveWorldData(event.getWorld().getSaveHandler(), (World) event.getWorld());
         }
     }
 }

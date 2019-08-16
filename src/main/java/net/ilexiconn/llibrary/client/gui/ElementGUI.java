@@ -5,16 +5,15 @@ import net.ilexiconn.llibrary.LLibrary;
 import net.ilexiconn.llibrary.client.ClientProxy;
 import net.ilexiconn.llibrary.client.gui.element.Element;
 import net.ilexiconn.llibrary.client.gui.element.IElementGUI;
-import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.init.SoundEvents;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Mouse;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -102,7 +101,7 @@ public abstract class ElementGUI extends GuiScreen implements IElementGUI {
 
     @Override
     public void playClickSound() {
-        this.mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        this.mc.getSoundHandler().play(SimpleSound.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0f));
     }
 
     @Override
@@ -131,14 +130,14 @@ public abstract class ElementGUI extends GuiScreen implements IElementGUI {
     }
 
     @Override
-    public void updateScreen() {
+    public void tick() {
         this.getPostOrderElements().forEach(Element::update);
     }
 
     public abstract void drawScreen(float mouseX, float mouseY, float partialTicks);
 
     @Override
-    public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void render(int mouseX, int mouseY, float partialTicks) {
         Gui.drawRect(0, 0, this.width, this.height, LLibrary.CONFIG.getTertiaryColor());
 
         float preciseMouseX = this.getPreciseMouseX();
@@ -148,17 +147,18 @@ public abstract class ElementGUI extends GuiScreen implements IElementGUI {
         synchronized (this.elementLock) {
             this.elements.forEach(element -> this.renderElement(element, preciseMouseX, preciseMouseY, partialTicks));
         }
+    }
 
-        int scrollAmount = Mouse.getDWheel();
-        if (scrollAmount != 0) {
-            for (Element element : this.getPostOrderElements()) {
-                if (element.isVisible() && element.isEnabled()) {
-                    if (element.mouseScrolled(preciseMouseX, preciseMouseY, scrollAmount)) {
-                        return;
-                    }
+    @Override
+    public boolean mouseScrolled(double scrollAmount) {
+        for (Element element : this.getPostOrderElements()) {
+            if (element.isVisible() && element.isEnabled()) {
+                if (element.mouseScrolled(this.getPreciseMouseX(), this.getPreciseMouseY(), (int) Math.ceil(scrollAmount))) {
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     protected void renderElement(Element element, float mouseX, float mouseY, float partialTicks) {
@@ -168,21 +168,28 @@ public abstract class ElementGUI extends GuiScreen implements IElementGUI {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         float preciseMouseX = this.getPreciseMouseX();
         float preciseMouseY = this.getPreciseMouseY();
+        boolean consumed = false;
         synchronized (this.elementLock) {
             List<Element> elements = this.getPostOrderElements();
             for (Element element : elements) {
                 if (element.isVisible() && element.isEnabled()) {
                     if (element.mouseClicked(preciseMouseX, preciseMouseY, mouseButton)) {
                         this.currentlyClicking = element;
+                        consumed = true;
                         break;
                     }
                 }
             }
         }
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+        return super.mouseClicked(mouseX, mouseY, mouseButton) || consumed;
+    }
+
+    @Override
+    public boolean mouseDragged(double p_mouseDragged_1_, double p_mouseDragged_3_, int p_mouseDragged_5_, double p_mouseDragged_6_, double p_mouseDragged_8_) {
+        return super.mouseDragged(p_mouseDragged_1_, p_mouseDragged_3_, p_mouseDragged_5_, p_mouseDragged_6_, p_mouseDragged_8_);
     }
 
     @Override
@@ -203,35 +210,39 @@ public abstract class ElementGUI extends GuiScreen implements IElementGUI {
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
+    public boolean mouseReleased(double mouseX, double mouseY, int state) {
         float preciseMouseX = this.getPreciseMouseX();
         float preciseMouseY = this.getPreciseMouseY();
+        boolean consumed = false;
         synchronized (this.elementLock) {
             List<Element> elements = this.getPostOrderElements();
             for (Element element : elements) {
                 if (element.isVisible() && element.isEnabled() && this.currentlyClicking == element) {
                     if (element.mouseReleased(preciseMouseX, preciseMouseY, state)) {
+                        consumed = true;
                         break;
                     }
                 }
             }
         }
-        super.mouseReleased(mouseX, mouseY, state);
+        return super.mouseReleased(mouseX, mouseY, state) || consumed;
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+    public boolean charTyped(char typedChar, int keyCode) {
+        boolean consumed = false;
         synchronized (this.elementLock) {
             List<Element> elements = this.getPostOrderElements();
             for (Element element : elements) {
                 if (element.isVisible() && element.isEnabled()) {
                     if (element.keyPressed(typedChar, keyCode)) {
+                        consumed = true;
                         break;
                     }
                 }
             }
         }
-        super.keyTyped(typedChar, keyCode);
+        return super.charTyped(typedChar, keyCode) || consumed;
     }
 
     @Override

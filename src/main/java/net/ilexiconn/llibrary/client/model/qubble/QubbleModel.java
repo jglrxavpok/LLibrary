@@ -57,21 +57,21 @@ public class QubbleModel implements INBTSerializable<NBTTagCompound> {
         NBTTagCompound compound = new NBTTagCompound();
         compound.setString("name", this.name);
         compound.setString("author", this.author);
-        compound.setInteger("version", this.version);
+        compound.setInt("version", this.version);
         if (this.textureWidth != 64 || this.textureHeight != 32) {
             NBTTagCompound textureTag = new NBTTagCompound();
-            textureTag.setInteger("width", this.textureWidth);
-            textureTag.setInteger("height", this.textureHeight);
+            textureTag.setInt("width", this.textureWidth);
+            textureTag.setInt("height", this.textureHeight);
             compound.setTag("texture", textureTag);
         }
         NBTTagList cuboidTag = new NBTTagList();
         for (QubbleCuboid cuboid : this.cuboids) {
-            cuboidTag.appendTag(cuboid.serializeNBT());
+            cuboidTag.add(cuboid.serializeNBT());
         }
         compound.setTag("cuboids", cuboidTag);
         NBTTagList animationsTag = new NBTTagList();
         for (QubbleAnimation animation : this.animations) {
-            animationsTag.appendTag(animation.serializeNBT());
+            animationsTag.add(animation.serializeNBT());
         }
         compound.setTag("animations", animationsTag);
         NBTTagList textures = new NBTTagList();
@@ -79,7 +79,7 @@ public class QubbleModel implements INBTSerializable<NBTTagCompound> {
             NBTTagCompound texture = new NBTTagCompound();
             texture.setString("key", entry.getKey());
             texture.setString("value", entry.getValue());
-            textures.appendTag(texture);
+            textures.add(texture);
         }
         compound.setTag("textures", textures);
         return compound;
@@ -89,25 +89,25 @@ public class QubbleModel implements INBTSerializable<NBTTagCompound> {
     public void deserializeNBT(NBTTagCompound compound) {
         this.name = compound.getString("name");
         this.author = compound.getString("author");
-        this.version = compound.getInteger("version");
+        this.version = compound.getInt("version");
         if (compound.hasKey("texture")) {
-            NBTTagCompound textureTag = compound.getCompoundTag("texture");
-            this.textureWidth = textureTag.getInteger("width");
-            this.textureHeight = textureTag.getInteger("height");
+            NBTTagCompound textureTag = compound.getCompound("texture");
+            this.textureWidth = textureTag.getInt("width");
+            this.textureHeight = textureTag.getInt("height");
         }
         this.cuboids = new ArrayList<>();
-        NBTTagList cuboidTag = compound.getTagList("cuboids", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < cuboidTag.tagCount(); i++) {
-            this.cuboids.add(QubbleCuboid.deserialize(cuboidTag.getCompoundTagAt(i)));
+        NBTTagList cuboidTag = compound.getList("cuboids", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < cuboidTag.size(); i++) {
+            this.cuboids.add(QubbleCuboid.deserialize(cuboidTag.getCompound(i)));
         }
-        NBTTagList animationsTag = compound.getTagList("animations", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < animationsTag.tagCount(); i++) {
-            this.animations.add(QubbleAnimation.deserialize(animationsTag.getCompoundTagAt(i)));
+        NBTTagList animationsTag = compound.getList("animations", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < animationsTag.size(); i++) {
+            this.animations.add(QubbleAnimation.deserialize(animationsTag.getCompound(i)));
         }
         if (compound.hasKey("textures")) {
-            NBTTagList textures = compound.getTagList("textures", Constants.NBT.TAG_COMPOUND);
-            for (int i = 0; i < textures.tagCount(); i++) {
-                NBTTagCompound texture = textures.getCompoundTagAt(i);
+            NBTTagList textures = compound.getList("textures", Constants.NBT.TAG_COMPOUND);
+            for (int i = 0; i < textures.size(); i++) {
+                NBTTagCompound texture = textures.getCompound(i);
                 if (texture.hasKey("key") && texture.hasKey("value")) {
                     this.textures.put(texture.getString("key"), texture.getString("value"));
                 }

@@ -4,7 +4,6 @@ import net.ilexiconn.llibrary.client.lang.LanguageHandler;
 import net.ilexiconn.llibrary.client.util.ItemTESRContext;
 import net.ilexiconn.llibrary.server.ServerProxy;
 import net.ilexiconn.llibrary.server.capability.IEntityDataCapability;
-import net.ilexiconn.llibrary.server.config.ConfigHandler;
 import net.ilexiconn.llibrary.server.config.LLibraryConfig;
 import net.ilexiconn.llibrary.server.core.api.LLibraryCoreAPI;
 import net.ilexiconn.llibrary.server.core.plugin.LLibraryPlugin;
@@ -70,6 +69,7 @@ public class LLibrary {
 
     private LLibrary() {
         INSTANCE = this;
+
     }
 
     @Mod.EventHandler
@@ -79,7 +79,7 @@ public class LLibrary {
         }
 
         ModList.get().forEachModFile(file -> {
-            file.compileContent() // TODO
+            file.compileContent(); // TODO
         });
         for (ModContainer mod : ModList.get().getMods()) {
 

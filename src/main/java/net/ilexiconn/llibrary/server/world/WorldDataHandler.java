@@ -35,7 +35,7 @@ public enum WorldDataHandler {
     }
 
     public void loadWorldData(ISaveHandler saveHandler, World world) {
-        if (world.provider.getDimension() == 0) {
+        if (world.getDimension().isSurfaceWorld()) {
             for (IWorldDataAdapter dataAdapter : this.dataAdapterList) {
                 File dataFile = new File(this.getSaveFolder(saveHandler, world), dataAdapter.getID() + ".dat");
                 if (dataFile.exists()) {
@@ -52,7 +52,7 @@ public enum WorldDataHandler {
     }
 
     public void saveWorldData(ISaveHandler saveHandler, World world) {
-        if (world.provider.getDimension() == 0) {
+        if (world.getDimension().isSurfaceWorld()) {
             for (IWorldDataAdapter dataAdapter : this.dataAdapterList) {
                 File dataFile = new File(this.getSaveFolder(saveHandler, world), dataAdapter.getID() + ".dat");
                 if (!dataFile.exists()) {
@@ -80,7 +80,7 @@ public enum WorldDataHandler {
 
     private File getSaveFolder(ISaveHandler saveHandler, World world) {
         File worldFolder;
-        IChunkLoader chunkLoader = saveHandler.getChunkLoader(world.provider);
+        IChunkLoader chunkLoader = saveHandler.getChunkLoader(world.getDimension());
         if (chunkLoader instanceof AnvilChunkLoader) {
             worldFolder = ((AnvilChunkLoader) chunkLoader).chunkSaveLocation;
         } else {

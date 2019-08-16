@@ -2,7 +2,6 @@ package net.ilexiconn.llibrary.client.gui.update;
 
 import net.ilexiconn.llibrary.client.ClientProxy;
 import net.ilexiconn.llibrary.server.update.UpdateContainer;
-import net.ilexiconn.llibrary.server.update.UpdateHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

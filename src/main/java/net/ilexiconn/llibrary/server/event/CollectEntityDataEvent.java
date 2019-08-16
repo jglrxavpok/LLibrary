@@ -2,7 +2,7 @@ package net.ilexiconn.llibrary.server.event;
 
 import net.ilexiconn.llibrary.server.capability.IEntityData;
 import net.minecraft.entity.Entity;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.eventbus.api.Event;
 
 import java.util.Collection;
 

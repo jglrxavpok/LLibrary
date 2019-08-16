@@ -39,7 +39,7 @@ public class QubbleAnimation implements INBTSerializable<NBTTagCompound> {
         compound.setString("name", this.name);
         NBTTagList keyframesTag = new NBTTagList();
         for (QubbleAnimationKeyframe keyframe : this.keyframes) {
-            keyframesTag.appendTag(keyframe.serializeNBT());
+            keyframesTag.add(keyframe.serializeNBT());
         }
         compound.setTag("keyframes", keyframesTag);
         return compound;
@@ -48,9 +48,9 @@ public class QubbleAnimation implements INBTSerializable<NBTTagCompound> {
     @Override
     public void deserializeNBT(NBTTagCompound compound) {
         this.name = compound.getString("name");
-        NBTTagList keyframesTag = compound.getTagList("name", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < keyframesTag.tagCount(); i++) {
-            this.keyframes.add(QubbleAnimationKeyframe.deserialize(keyframesTag.getCompoundTagAt(i)));
+        NBTTagList keyframesTag = compound.getList("name", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < keyframesTag.size(); i++) {
+            this.keyframes.add(QubbleAnimationKeyframe.deserialize(keyframesTag.getCompound(i)));
         }
     }
 

@@ -8,7 +8,7 @@ public interface IMultipartEntity {
 
     default void onUpdateParts() {
         for (Entity entity : this.getParts()) {
-            entity.onUpdate();
+            entity.tick();
         }
     }
 

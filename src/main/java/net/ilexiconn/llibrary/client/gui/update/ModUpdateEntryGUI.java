@@ -5,10 +5,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.client.GuiScrollingList;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +84,7 @@ public class ModUpdateEntryGUI extends GuiScrollingList {
             if (text != null) {
                 GlStateManager.enableBlend();
                 this.parent.mc.fontRenderer.drawStringWithShadow(text.getFormattedText(), this.left + 4, top, 0xFFFFFF);
-                GlStateManager.disableAlpha();
+                GlStateManager.disableAlphaTest();
                 GlStateManager.disableBlend();
             }
             top += 10;

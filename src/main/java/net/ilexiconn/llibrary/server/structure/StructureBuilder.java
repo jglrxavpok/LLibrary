@@ -4,14 +4,12 @@ import net.ilexiconn.llibrary.server.structure.rule.FixedRule;
 import net.ilexiconn.llibrary.server.structure.rule.RepeatRule;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
-import net.minecraft.block.BlockLog.EnumAxis;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockStairs;
-import net.minecraft.block.BlockStairs.EnumHalf;
 import net.minecraft.block.BlockVine;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.IProperty;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.math.BlockPos;
@@ -64,7 +62,7 @@ public class StructureBuilder extends StructureGenerator {
                 }
             }
         }
-        pooledPos.release();
+        pooledPos.close();
     }
 
     @Override
@@ -72,8 +70,8 @@ public class StructureBuilder extends StructureGenerator {
         if (front == top || front.getOpposite() == top) {
             throw new IllegalArgumentException("Invalid rotation: " + front + " & " + top);
         }
-        Vec3i frontVec = new Vec3i(front.getFrontOffsetX(), front.getFrontOffsetY(), front.getFrontOffsetZ());
-        Vec3i topVec = new Vec3i(-top.getFrontOffsetX(), -top.getFrontOffsetY(), -top.getFrontOffsetZ());
+        Vec3i frontVec = new Vec3i(front.getXOffset(), front.getYOffset(), front.getZOffset());
+        Vec3i topVec = new Vec3i(-top.getXOffset(), -top.getYOffset(), -top.getZOffset());
         Vec3i perpVec = topVec.crossProduct(frontVec);
         StructureBuilder copy = new StructureBuilder();
         copy.front = transform(this.front, frontVec, topVec, perpVec);
@@ -92,50 +90,50 @@ public class StructureBuilder extends StructureGenerator {
                 for (int i = 0; i < states.length; i++) {
                     IBlockState state = states[i];
                     if (state.getBlock() instanceof BlockStairs) {
-                        EnumFacing facing = transform(state.getValue(BlockStairs.FACING), frontVec, topVec, perpVec);
+                        EnumFacing facing = transform(state.get(BlockStairs.FACING), frontVec, topVec, perpVec);
                         EnumFacing perp = transform(EnumFacing.UP, frontVec, topVec, perpVec);
                         if (facing.getAxis() == Axis.Y) {
-                            if (state.getValue(BlockStairs.HALF) == EnumHalf.BOTTOM) {
+                            if (state.get(BlockStairs.HALF) == EnumHalf.BOTTOM) {
                                 perp = perp.getOpposite();
                                 if (facing == EnumFacing.UP) {
-                                    state = state.cycleProperty(BlockStairs.HALF);
+                                    state = state.cycle(BlockStairs.HALF);
                                 }
                             } else if (facing == EnumFacing.DOWN) {
-                                state = state.cycleProperty(BlockStairs.HALF);
+                                state = state.cycle(BlockStairs.HALF);
                             }
-                            state = state.withProperty(BlockStairs.FACING, perp);
+                            state = state.with(BlockStairs.FACING, perp);
                         } else {
-                            state = state.withProperty(BlockStairs.FACING, facing);
+                            state = state.with(BlockStairs.FACING, facing);
                         }
                         if (inverted) {
-                            state = state.cycleProperty(BlockStairs.HALF);
+                            state = state.cycle(BlockStairs.HALF);
                         }
                     } else if (state.getBlock() instanceof BlockSlab) {
                         if (inverted) {
-                            state = state.cycleProperty(BlockSlab.HALF);
+                            state = state.cycle(BlockSlab.HALF);
                         }
                     } else if (state.getBlock() instanceof BlockVine) {
-                        EnumFacing facing = transform(state.getValue(BlockVine.NORTH) ? EnumFacing.NORTH : state.getValue(BlockVine.EAST) ? EnumFacing.EAST : state.getValue(BlockVine.SOUTH) ? EnumFacing.SOUTH : EnumFacing.WEST, frontVec, topVec, perpVec);
+                        EnumFacing facing = transform(state.get(BlockVine.NORTH) ? EnumFacing.NORTH : state.get(BlockVine.EAST) ? EnumFacing.EAST : state.get(BlockVine.SOUTH) ? EnumFacing.SOUTH : EnumFacing.WEST, frontVec, topVec, perpVec);
                         if (inverted) {
                             facing = facing.getOpposite();
                         }
-                        state = state.withProperty(BlockVine.NORTH, facing == EnumFacing.NORTH);
-                        state = state.withProperty(BlockVine.EAST, facing == EnumFacing.EAST);
-                        state = state.withProperty(BlockVine.SOUTH, facing == EnumFacing.SOUTH);
-                        state = state.withProperty(BlockVine.WEST, facing == EnumFacing.WEST);
+                        state = state.with(BlockVine.NORTH, facing == EnumFacing.NORTH);
+                        state = state.with(BlockVine.EAST, facing == EnumFacing.EAST);
+                        state = state.with(BlockVine.SOUTH, facing == EnumFacing.SOUTH);
+                        state = state.with(BlockVine.WEST, facing == EnumFacing.WEST);
                     } else if (state.getBlock() instanceof BlockLog) {
-                        EnumAxis axis = state.getValue(BlockLog.LOG_AXIS);
-                        EnumFacing facing = axis == EnumAxis.X ? EnumFacing.EAST : axis == EnumAxis.Y ? EnumFacing.UP : EnumFacing.SOUTH;
+                        Axis axis = state.get(BlockLog.AXIS);
+                        EnumFacing facing = axis == Axis.X ? EnumFacing.EAST : axis == Axis.Y ? EnumFacing.UP : EnumFacing.SOUTH;
                         EnumFacing transformed = transform(facing, frontVec, topVec, perpVec);
-                        state = state.withProperty(BlockLog.LOG_AXIS, EnumAxis.fromFacingAxis(transformed.getAxis()));
+                        state = state.with(BlockLog.AXIS, Axis.fromFacingAxis(transformed.getAxis()));
                     } else {
-                        for (IProperty prop : state.getPropertyKeys()) {
+                        for (IProperty prop : state.getProperties()) {
                             if (prop instanceof PropertyDirection) {
                                 PropertyDirection propDir = (PropertyDirection) prop;
-                                EnumFacing facing = state.getValue(propDir);
+                                EnumFacing facing = state.get(propDir);
                                 EnumFacing newFacing = transform(facing, frontVec, topVec, perpVec);
                                 if (propDir.getAllowedValues().contains(newFacing)) {
-                                    state = state.withProperty(propDir, newFacing);
+                                    state = state.with(propDir, newFacing);
                                 }
                             }
                         }
@@ -168,8 +166,8 @@ public class StructureBuilder extends StructureGenerator {
             throw new IllegalArgumentException("Must be horizontal facing: " + facing);
         }
         int idx = facing.getHorizontalIndex() - (this.front.getAxis() == Axis.Y ? this.top.getHorizontalIndex() : this.front.getHorizontalIndex()) - 1;
-        idx = (idx % EnumFacing.HORIZONTALS.length + EnumFacing.HORIZONTALS.length) % EnumFacing.HORIZONTALS.length;
-        return this.rotate(EnumFacing.HORIZONTALS[idx], EnumFacing.UP);
+        idx = (idx % EnumFacing.BY_HORIZONTAL_INDEX.length + EnumFacing.BY_HORIZONTAL_INDEX.length) % EnumFacing.BY_HORIZONTAL_INDEX.length;
+        return this.rotate(EnumFacing.BY_HORIZONTAL_INDEX[idx], EnumFacing.UP);
     }
 
     public StructureBuilder startComponent() {

@@ -8,7 +8,6 @@ import net.ilexiconn.llibrary.server.entity.EntityPropertiesHandler;
 import net.ilexiconn.llibrary.server.network.AbstractMessage;
 import net.ilexiconn.llibrary.server.network.SnackbarMessage;
 import net.ilexiconn.llibrary.server.snackbar.Snackbar;
-import net.ilexiconn.llibrary.server.update.UpdateHandler;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -26,9 +25,6 @@ public class ServerProxy {
     }
 
     public void onPostInit() {
-        if (LLibrary.CONFIG.hasVersionCheck()) {
-            UpdateHandler.INSTANCE.searchForUpdates();
-        }
     }
 
     public <T extends AbstractMessage<T>> void handleMessage(final T message, final MessageContext messageContext) {

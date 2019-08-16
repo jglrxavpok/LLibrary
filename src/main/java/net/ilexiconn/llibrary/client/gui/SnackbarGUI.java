@@ -8,8 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -41,12 +41,12 @@ public class SnackbarGUI extends Gui {
         ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft());
         switch (this.snackbar.getPosition()) {
             case UP:
-                GlStateManager.translate(0.0F, -this.yOffset, 0.0F);
+                GlStateManager.translatef(0.0F, -this.yOffset, 0.0F);
                 Gui.drawRect(0, 20, resolution.getScaledWidth(), 0, this.snackbar.getColor());
                 ClientProxy.MINECRAFT.fontRenderer.drawString(this.snackbar.getMessage(), 10, 6, 0xFFFFFFFF);
                 break;
             case DOWN:
-                GlStateManager.translate(0.0F, this.yOffset, 0.0F);
+                GlStateManager.translatef(0.0F, this.yOffset, 0.0F);
                 drawRect(0, resolution.getScaledHeight() - 20, resolution.getScaledWidth(), resolution.getScaledHeight(), this.snackbar.getColor());
                 ClientProxy.MINECRAFT.fontRenderer.drawString(this.snackbar.getMessage(), 10, resolution.getScaledHeight() - 14, 0xFFFFFFFF);
                 break;

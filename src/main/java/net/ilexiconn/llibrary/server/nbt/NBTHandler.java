@@ -4,7 +4,7 @@ import net.ilexiconn.llibrary.LLibrary;
 import net.ilexiconn.llibrary.server.nbt.parser.INBTParser;
 import net.ilexiconn.llibrary.server.nbt.parser.NBTParsers;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.lang.reflect.Field;
@@ -21,7 +21,7 @@ public enum NBTHandler {
 
     private Map<Class<?>, INBTParser<?, ?>> nbtParserMap = new HashMap<>();
 
-    public <V, T extends NBTBase> void registerNBTParser(Class<V> type, INBTParser<V, T> nbtParser) {
+    public <V, T extends INBTBase> void registerNBTParser(Class<V> type, INBTParser<V, T> nbtParser) {
         this.nbtParserMap.put(type, nbtParser);
     }
 
@@ -62,7 +62,7 @@ public enum NBTHandler {
                     if (name.isEmpty()) {
                         name = field.getName();
                     }
-                    NBTBase tag = this.writeFieldToNBT(object, field);
+                    INBTBase tag = this.writeFieldToNBT(object, field);
                     if (tag != null) {
                         compound.setTag(name, tag);
                     }
@@ -74,7 +74,7 @@ public enum NBTHandler {
                     }
                     Class<?> type = mutatorProperty.type();
                     Method getter = this.getGetter(clazz, name, type, mutatorProperty.getter());
-                    NBTBase tag = this.writeGetterValueToNBT(object, getter);
+                    INBTBase tag = this.writeGetterValueToNBT(object, getter);
                     if (tag != null) {
                         compound.setTag(name, tag);
                     }
@@ -83,7 +83,7 @@ public enum NBTHandler {
         } while ((clazz = clazz.getSuperclass()) != null);
     }
 
-    public <V, T extends NBTBase> INBTParser<V, T> getParserForType(Class<V> type) {
+    public <V, T extends INBTBase> INBTParser<V, T> getParserForType(Class<V> type) {
         INBTParser<V, T> nbtParser = NBTParsers.getBuiltinParser(type);
         if (nbtParser != null) {
             return nbtParser;
@@ -94,7 +94,7 @@ public enum NBTHandler {
         }
     }
 
-    private <V, T extends NBTBase> T writeFieldToNBT(V object, Field field) {
+    private <V, T extends INBTBase> T writeFieldToNBT(V object, Field field) {
         V value;
         try {
             value = (V) field.get(object);
@@ -105,7 +105,7 @@ public enum NBTHandler {
         return this.writeToNBT((Class<V>) field.getType(), value);
     }
 
-    private <V, T extends NBTBase> T writeGetterValueToNBT(V object, Method getter) {
+    private <V, T extends INBTBase> T writeGetterValueToNBT(V object, Method getter) {
         V value;
         try {
             value = (V) getter.invoke(object);
@@ -116,7 +116,7 @@ public enum NBTHandler {
         return this.writeToNBT((Class<V>) getter.getReturnType(), value);
     }
 
-    private <V, T extends NBTBase> T writeToNBT(Class<V> type, V value) {
+    private <V, T extends INBTBase> T writeToNBT(Class<V> type, V value) {
         if (value == null) {
             return null;
         }
@@ -131,7 +131,7 @@ public enum NBTHandler {
     }
 
     private void readFromNBTToField(Object object, Field field, String name, NBTTagCompound compound) {
-        NBTBase valueNBT = compound.getTag(name);
+        INBTBase valueNBT = compound.getTag(name);
         if (valueNBT == null) {
             return;
         }
@@ -144,7 +144,7 @@ public enum NBTHandler {
     }
 
     private void readFromNBTToSetter(Object object, Method setter, String name, NBTTagCompound compound) {
-        NBTBase valueNBT = compound.getTag(name);
+        INBTBase valueNBT = compound.getTag(name);
         if (valueNBT == null) {
             return;
         }
@@ -156,7 +156,7 @@ public enum NBTHandler {
         }
     }
 
-    private <V, T extends NBTBase> V readFromNBT(Class<V> type, T tag) {
+    private <V, T extends INBTBase> V readFromNBT(Class<V> type, T tag) {
         INBTParser<V, T> nbtParser = this.getParserForType(type);
         if (nbtParser != null) {
             return nbtParser.parseTag(tag);

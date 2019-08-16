@@ -1,18 +1,7 @@
 package net.ilexiconn.llibrary.server.nbt.parser;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagByte;
-import net.minecraft.nbt.NBTTagByteArray;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagDouble;
-import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagLong;
-import net.minecraft.nbt.NBTTagShort;
-import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.*;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -22,117 +11,117 @@ import net.minecraft.util.math.BlockPos;
 public enum NBTParsers implements INBTParser {
     BOOLEAN {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             return ((NBTTagByte) tag).getByte() != 0;
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             return new NBTTagByte((byte) ((Boolean) value ? 1 : 0));
         }
     },
 
     BYTE {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             return ((NBTTagByte) tag).getByte();
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             return new NBTTagByte((Byte) value);
         }
     },
 
     CHAR {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             return (char) ((NBTTagShort) tag).getShort();
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             return new NBTTagShort((short) ((Character) value).charValue());
         }
     },
 
     SHORT {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             return ((NBTTagShort) tag).getShort();
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             return new NBTTagShort((Short) value);
         }
     },
 
     INTEGER {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             return ((NBTTagInt) tag).getInt();
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             return new NBTTagInt((Integer) value);
         }
     },
 
     FLOAT {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             return ((NBTTagFloat) tag).getFloat();
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             return new NBTTagFloat((Float) value);
         }
     },
 
     LONG {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             return ((NBTTagLong) tag).getLong();
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             return new NBTTagLong((Long) value);
         }
     },
 
     DOUBLE {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             return ((NBTTagDouble) tag).getDouble();
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             return new NBTTagDouble((Double) value);
         }
     },
 
     STRING {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             return ((NBTTagString) tag).getString();
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             return new NBTTagString((String) value);
         }
     },
 
     BOOLEAN_ARRAY {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagCompound list = (NBTTagCompound) tag;
-            Boolean[] boolArray = new Boolean[list.getInteger("length")];
+            Boolean[] boolArray = new Boolean[list.getInt("length")];
             byte[] boolList = list.getByteArray("array");
             for (int i = 0; i < boolArray.length; i++) {
                 boolArray[i] = ((boolList[i / 8] >>> (i % 8)) & 1) != 0;
@@ -141,14 +130,14 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             Boolean[] valueBoolArray = (Boolean[]) value;
             byte[] valueByteArray = new byte[(valueBoolArray.length + 7) / 8];
             for (int i = 0; i < valueBoolArray.length; i++) {
                 valueByteArray[i / 8] |= (byte) ((valueBoolArray[i] ? 1 : 0) << (i % 8));
             }
             NBTTagCompound byteArrayCompound = new NBTTagCompound();
-            byteArrayCompound.setInteger("length", valueBoolArray.length);
+            byteArrayCompound.setInt("length", valueBoolArray.length);
             byteArrayCompound.setByteArray("array", valueByteArray);
             return byteArrayCompound;
         }
@@ -156,9 +145,9 @@ public enum NBTParsers implements INBTParser {
 
     BOOLEAN_ARRAY_PRIM {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagCompound list = (NBTTagCompound) tag;
-            boolean[] boolArray = new boolean[list.getInteger("length")];
+            boolean[] boolArray = new boolean[list.getInt("length")];
             byte[] boolList = list.getByteArray("array");
             for (int i = 0; i < boolArray.length; i++) {
                 boolArray[i] = ((boolList[i / 8] >>> (i % 8)) & 1) != 0;
@@ -167,14 +156,14 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             boolean[] valueBoolArray = (boolean[]) value;
             byte[] valueByteArray = new byte[(valueBoolArray.length + 7) / 8];
             for (int i = 0; i < valueBoolArray.length; i++) {
                 valueByteArray[i / 8] |= (byte) ((valueBoolArray[i] ? 1 : 0) << (i % 8));
             }
             NBTTagCompound byteArrayCompound = new NBTTagCompound();
-            byteArrayCompound.setInteger("length", valueBoolArray.length);
+            byteArrayCompound.setInt("length", valueBoolArray.length);
             byteArrayCompound.setByteArray("array", valueByteArray);
             return byteArrayCompound;
         }
@@ -182,7 +171,7 @@ public enum NBTParsers implements INBTParser {
 
     BYTE_ARRAY {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             byte[] bytePrimArray = ((NBTTagByteArray) tag).getByteArray();
             Byte[] byteArray = new Byte[bytePrimArray.length];
             for (int i = 0; i < byteArray.length; i++) {
@@ -192,7 +181,7 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             Byte[] valueByteArray = (Byte[]) value;
             byte[] valuePrimByteArray = new byte[valueByteArray.length];
             for (int i = 0; i < valueByteArray.length; i++) {
@@ -204,21 +193,21 @@ public enum NBTParsers implements INBTParser {
 
     BYTE_ARRAY_PRIM {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             return ((NBTTagByteArray) tag).getByteArray();
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             return new NBTTagByteArray((byte[]) value);
         }
     },
 
     CHAR_ARRAY {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagList charList = (NBTTagList) tag;
-            Character[] charArray = new Character[charList.tagCount()];
+            Character[] charArray = new Character[charList.size()];
             for (int i = 0; i < charArray.length; i++) {
                 charArray[i] = (char) ((NBTTagShort) charList.get(i)).getShort();
             }
@@ -226,11 +215,11 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             Character[] valueCharArray = (Character[]) value;
             NBTTagList list = new NBTTagList();
             for (Character aValueCharArray : valueCharArray) {
-                list.appendTag(new NBTTagShort((short) aValueCharArray.charValue()));
+                list.add(new NBTTagShort((short) aValueCharArray.charValue()));
             }
             return list;
         }
@@ -238,9 +227,9 @@ public enum NBTParsers implements INBTParser {
 
     CHAR_ARRAY_PRIM {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagList charList = (NBTTagList) tag;
-            char[] charArray = new char[charList.tagCount()];
+            char[] charArray = new char[charList.size()];
             for (int i = 0; i < charArray.length; i++) {
                 charArray[i] = (char) ((NBTTagShort) charList.get(i)).getShort();
             }
@@ -248,11 +237,11 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             char[] valueCharArray = (char[]) value;
             NBTTagList list = new NBTTagList();
             for (Character aValueCharArray : valueCharArray) {
-                list.appendTag(new NBTTagShort((short) aValueCharArray.charValue()));
+                list.add(new NBTTagShort((short) aValueCharArray.charValue()));
             }
             return list;
         }
@@ -260,9 +249,9 @@ public enum NBTParsers implements INBTParser {
 
     SHORT_ARRAY {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagList charList = (NBTTagList) tag;
-            Short[] charArray = new Short[charList.tagCount()];
+            Short[] charArray = new Short[charList.size()];
             for (int i = 0; i < charArray.length; i++) {
                 charArray[i] = ((NBTTagShort) charList.get(i)).getShort();
             }
@@ -270,11 +259,11 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             Short[] valueShortArray = (Short[]) value;
             NBTTagList list = new NBTTagList();
             for (Short aValueShortArray : valueShortArray) {
-                list.appendTag(new NBTTagShort(aValueShortArray));
+                list.add(new NBTTagShort(aValueShortArray));
             }
             return list;
         }
@@ -282,9 +271,9 @@ public enum NBTParsers implements INBTParser {
 
     SHORT_ARRAY_PRIM {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagList charList = (NBTTagList) tag;
-            short[] charArray = new short[charList.tagCount()];
+            short[] charArray = new short[charList.size()];
             for (int i = 0; i < charArray.length; i++) {
                 charArray[i] = ((NBTTagShort) charList.get(i)).getShort();
             }
@@ -292,11 +281,11 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             short[] valueShortArray = (short[]) value;
             NBTTagList list = new NBTTagList();
             for (Short aValueShortArray : valueShortArray) {
-                list.appendTag(new NBTTagShort(aValueShortArray));
+                list.add(new NBTTagShort(aValueShortArray));
             }
             return list;
         }
@@ -304,7 +293,7 @@ public enum NBTParsers implements INBTParser {
 
     INTEGER_ARRAY {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagIntArray intList = (NBTTagIntArray) tag;
             int[] intPrimArray = intList.getIntArray();
             Integer[] intArray = new Integer[intPrimArray.length];
@@ -315,7 +304,7 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             Integer[] valueIntArray = (Integer[]) value;
             int[] valuePrimIntArray = new int[valueIntArray.length];
             for (int i = 0; i < valueIntArray.length; i++) {
@@ -327,21 +316,21 @@ public enum NBTParsers implements INBTParser {
 
     INTEGER_ARRAY_PRIM {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             return ((NBTTagIntArray) tag).getIntArray();
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             return new NBTTagIntArray((int[]) value);
         }
     },
 
     FLOAT_ARRAY {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagList floatList = (NBTTagList) tag;
-            Float[] floatArray = new Float[floatList.tagCount()];
+            Float[] floatArray = new Float[floatList.size()];
             for (int i = 0; i < floatArray.length; i++) {
                 floatArray[i] = ((NBTTagFloat) floatList.get(i)).getFloat();
             }
@@ -349,11 +338,11 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             Float[] valueFloatArray = (Float[]) value;
             NBTTagList list = new NBTTagList();
             for (Float aValueFloatArray : valueFloatArray) {
-                list.appendTag(new NBTTagFloat(aValueFloatArray));
+                list.add(new NBTTagFloat(aValueFloatArray));
             }
             return list;
         }
@@ -361,9 +350,9 @@ public enum NBTParsers implements INBTParser {
 
     FLOAT_ARRAY_PRIM {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagList floatList = (NBTTagList) tag;
-            float[] floatArray = new float[floatList.tagCount()];
+            float[] floatArray = new float[floatList.size()];
             for (int i = 0; i < floatArray.length; i++) {
                 floatArray[i] = ((NBTTagFloat) floatList.get(i)).getFloat();
             }
@@ -371,11 +360,11 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             float[] valueFloatArray = (float[]) value;
             NBTTagList list = new NBTTagList();
             for (float aValueFloatArray : valueFloatArray) {
-                list.appendTag(new NBTTagFloat(aValueFloatArray));
+                list.add(new NBTTagFloat(aValueFloatArray));
             }
             return list;
         }
@@ -383,9 +372,9 @@ public enum NBTParsers implements INBTParser {
 
     LONG_ARRAY {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagList longList = (NBTTagList) tag;
-            Long[] longArray = new Long[longList.tagCount()];
+            Long[] longArray = new Long[longList.size()];
             for (int i = 0; i < longArray.length; i++) {
                 longArray[i] = ((NBTTagLong) longList.get(i)).getLong();
             }
@@ -393,11 +382,11 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             Long[] valueLongArray = (Long[]) value;
             NBTTagList list = new NBTTagList();
             for (Long aValueLongArray : valueLongArray) {
-                list.appendTag(new NBTTagLong(aValueLongArray));
+                list.add(new NBTTagLong(aValueLongArray));
             }
             return list;
         }
@@ -405,9 +394,9 @@ public enum NBTParsers implements INBTParser {
 
     LONG_ARRAY_PRIM {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagList longList = (NBTTagList) tag;
-            long[] longArray = new long[longList.tagCount()];
+            long[] longArray = new long[longList.size()];
             for (int i = 0; i < longArray.length; i++) {
                 longArray[i] = ((NBTTagLong) longList.get(i)).getLong();
             }
@@ -415,11 +404,11 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             long[] valueLongArray = (long[]) value;
             NBTTagList list = new NBTTagList();
             for (long aValueLongArray : valueLongArray) {
-                list.appendTag(new NBTTagLong(aValueLongArray));
+                list.add(new NBTTagLong(aValueLongArray));
             }
             return list;
         }
@@ -427,9 +416,9 @@ public enum NBTParsers implements INBTParser {
 
     DOUBLE_ARRAY {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagList doubleList = (NBTTagList) tag;
-            Double[] doubleArray = new Double[doubleList.tagCount()];
+            Double[] doubleArray = new Double[doubleList.size()];
             for (int i = 0; i < doubleArray.length; i++) {
                 doubleArray[i] = ((NBTTagDouble) doubleList.get(i)).getDouble();
             }
@@ -437,11 +426,11 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             Double[] valueDoubleArray = (Double[]) value;
             NBTTagList list = new NBTTagList();
             for (Double aValueDoubleArray : valueDoubleArray) {
-                list.appendTag(new NBTTagDouble(aValueDoubleArray));
+                list.add(new NBTTagDouble(aValueDoubleArray));
             }
             return list;
         }
@@ -449,9 +438,9 @@ public enum NBTParsers implements INBTParser {
 
     DOUBLE_ARRAY_PRIM {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagList doubleList = (NBTTagList) tag;
-            double[] doubleArray = new double[doubleList.tagCount()];
+            double[] doubleArray = new double[doubleList.size()];
             for (int i = 0; i < doubleArray.length; i++) {
                 doubleArray[i] = ((NBTTagDouble) doubleList.get(i)).getDouble();
             }
@@ -459,11 +448,11 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             double[] valueDoubleArray = (double[]) value;
             NBTTagList list = new NBTTagList();
             for (double aValueDoubleArray : valueDoubleArray) {
-                list.appendTag(new NBTTagDouble(aValueDoubleArray));
+                list.add(new NBTTagDouble(aValueDoubleArray));
             }
             return list;
         }
@@ -471,9 +460,9 @@ public enum NBTParsers implements INBTParser {
 
     STRING_ARRAY {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagList stringList = (NBTTagList) tag;
-            String[] stringArray = new String[stringList.tagCount()];
+            String[] stringArray = new String[stringList.size()];
             for (int i = 0; i < stringArray.length; i++) {
                 stringArray[i] = ((NBTTagString) stringList.get(i)).getString();
             }
@@ -481,11 +470,11 @@ public enum NBTParsers implements INBTParser {
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             String[] valueStringArray = (String[]) value;
             NBTTagList list = new NBTTagList();
             for (String aValueStringArray : valueStringArray) {
-                list.appendTag(new NBTTagString(aValueStringArray));
+                list.add(new NBTTagString(aValueStringArray));
             }
             return list;
         }
@@ -493,36 +482,36 @@ public enum NBTParsers implements INBTParser {
 
     ITEM_STACK {
         @Override
-        public Object parseTag(NBTBase tag) {
-            return new ItemStack((NBTTagCompound) tag);
+        public Object parseTag(INBTBase tag) {
+            return ItemStack.read((NBTTagCompound) tag);
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             NBTTagCompound itemStackCompound = new NBTTagCompound();
-            ((ItemStack) value).writeToNBT(itemStackCompound);
+            ((ItemStack) value).write(itemStackCompound);
             return itemStackCompound;
         }
     },
 
     BLOCK_POS {
         @Override
-        public Object parseTag(NBTBase tag) {
+        public Object parseTag(INBTBase tag) {
             NBTTagCompound blockPosCompound = (NBTTagCompound) tag;
-            return new BlockPos(blockPosCompound.getInteger("x"), blockPosCompound.getInteger("y"), blockPosCompound.getInteger("z"));
+            return new BlockPos(blockPosCompound.getInt("x"), blockPosCompound.getInt("y"), blockPosCompound.getInt("z"));
         }
 
         @Override
-        public NBTBase parseValue(Object value) {
+        public INBTBase parseValue(Object value) {
             NBTTagCompound blockPosCompound = new NBTTagCompound();
-            blockPosCompound.setInteger("x", ((BlockPos) value).getX());
-            blockPosCompound.setInteger("y", ((BlockPos) value).getY());
-            blockPosCompound.setInteger("z", ((BlockPos) value).getZ());
+            blockPosCompound.setInt("x", ((BlockPos) value).getX());
+            blockPosCompound.setInt("y", ((BlockPos) value).getY());
+            blockPosCompound.setInt("z", ((BlockPos) value).getZ());
             return blockPosCompound;
         }
     };
 
-    public static <V, T extends NBTBase> INBTParser<V, T> getBuiltinParser(Class<V> type) {
+    public static <V, T extends INBTBase> INBTParser<V, T> getBuiltinParser(Class<V> type) {
         if (Boolean.class.isAssignableFrom(type) || boolean.class.isAssignableFrom(type)) {
             return BOOLEAN;
         } else if (Byte.class.isAssignableFrom(type) || byte.class.isAssignableFrom(type)) {

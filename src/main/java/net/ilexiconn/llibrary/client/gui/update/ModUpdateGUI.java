@@ -1,18 +1,16 @@
 package net.ilexiconn.llibrary.client.gui.update;
 
 import net.ilexiconn.llibrary.server.update.UpdateContainer;
-import net.ilexiconn.llibrary.server.update.UpdateHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.Desktop;
-import java.io.IOException;
+import java.awt.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,51 +45,47 @@ public class ModUpdateGUI extends GuiScreen {
     public void initGui() {
         int width = 0;
         for (UpdateContainer mod : UpdateHandler.INSTANCE.getOutdatedModList()) {
-            width = Math.max(width, this.fontRenderer.getStringWidth(mod.getModContainer().getName()) + 47);
-            width = Math.max(width, this.fontRenderer.getStringWidth(mod.getModContainer().getVersion()) + 47);
+            width = Math.max(width, this.fontRenderer.getStringWidth(mod.getModContainer().getModInfo().getDisplayName()) + 47);
+            width = Math.max(width, this.fontRenderer.getStringWidth(mod.getModContainer().getModInfo().getVersion().toString())/*FIXME: proper formatting*/ + 47);
         }
         width = Math.min(width, 150);
         this.modList = new ModUpdateListGUI(this, width);
 
-        this.buttonList.add(this.buttonDone = new GuiButton(6, ((this.modList.getRight() + this.width) / 2) - 100, this.height - 38, I18n.format("gui.done")));
-        this.buttonList.add(this.buttonUpdate = new GuiButton(20, 10, this.height - 38, this.modList.getWidth(), 20, I18n.format("gui.llibrary.update")));
+        addButton(this.buttonDone = new GuiButton(6, ((this.modList.getRight() + this.width) / 2) - 100, this.height - 38, I18n.format("gui.done")) {
+            @Override
+            public void onClick(double mouseX, double mouseY) {
+                ModUpdateGUI.this.mc.displayGuiScreen(ModUpdateGUI.this.parent);
+            }
+        });
+        addButton(this.buttonUpdate = new GuiButton(20, 10, this.height - 38, this.modList.getWidth(), 20, I18n.format("gui.llibrary.update")) {
+            @Override
+            public void onClick(double mouseX, double mouseY) {
+                Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+                    try {
+                        desktop.browse(new URI(UpdateHandler.INSTANCE.getOutdatedModList().get(this.selected).getUpdateURL()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         this.updateModInfo();
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
-        if (button.enabled) {
-            switch (button.id) {
-                case 6: {
-                    this.mc.displayGuiScreen(this.parent);
-                    return;
-                }
-                case 20: {
-                    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-                    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-                        try {
-                            desktop.browse(new URI(UpdateHandler.INSTANCE.getOutdatedModList().get(this.selected).getUpdateURL()));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
-        super.actionPerformed(button);
-    }
-
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void render(int mouseX, int mouseY, float partialTicks) {
         if (UpdateHandler.INSTANCE.getOutdatedModList().isEmpty()) {
             this.drawDefaultBackground();
             int i = this.width / 2;
             int j = this.height / 2;
             this.buttonDone.x = this.width / 2 - 100;
             this.buttonDone.y = this.height - 38;
-            this.buttonList.clear();
-            this.buttonList.add(this.buttonDone);
+            this.buttons.clear();
+            this.children.clear();
+            this.buttons.add(this.buttonDone);
+            this.children.add(this.buttonDone);
             this.drawScaledString(I18n.format("gui.llibrary.updated.1"), i, j - 40, 0xFFFFFF, 2.0F);
             this.drawScaledString(I18n.format("gui.llibrary.updated.2"), i, j - 15, 0xFFFFFF, 1.0F);
         } else {
@@ -104,7 +98,7 @@ public class ModUpdateGUI extends GuiScreen {
             this.drawCenteredString(this.fontRenderer, I18n.format("gui.llibrary.update.title"), left, 16, 0xFFFFFF);
         }
 
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        super.render(mouseX, mouseY, partialTicks);
     }
 
     public void selectModIndex(int index) {
@@ -133,9 +127,9 @@ public class ModUpdateGUI extends GuiScreen {
         this.buttonUpdate.displayString = I18n.format("gui.llibrary.update");
 
         UpdateContainer updateContainer = UpdateHandler.INSTANCE.getOutdatedModList().get(this.selected);
-        textList.add(updateContainer.getModContainer().getName());
-        textList.add(I18n.format("gui.llibrary.currentVersion") + String.format(": %s", updateContainer.getModContainer().getVersion()));
-        textList.add(I18n.format("gui.llibrary.latestVersion") + String.format(": %s", updateContainer.getLatestVersion().getVersionString()));
+        textList.add(updateContainer.getModContainer().getModInfo().getDisplayName());
+        textList.add(I18n.format("gui.llibrary.currentVersion") + String.format(": %s", updateContainer.getModContainer().getModInfo()));
+        textList.add(I18n.format("gui.llibrary.latestVersion") + String.format(": %s", updateContainer.getLatestVersion()));
         textList.add(null);
         Collections.addAll(textList, UpdateHandler.INSTANCE.getChangelog(updateContainer, updateContainer.getLatestVersion()));
 

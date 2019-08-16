@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 
 import java.lang.reflect.Constructor;
@@ -164,8 +164,8 @@ public enum EntityPropertiesHandler {
 
     @SubscribeEvent
     public void onPlayerLogOut(PlayerLoggedOutEvent event) {
-        if (event.player instanceof EntityPlayerMP) {
-            this.trackerMap.remove(event.player);
+        if (event.getPlayer() instanceof EntityPlayerMP) {
+            this.trackerMap.remove(event.getPlayer());
         }
     }
 

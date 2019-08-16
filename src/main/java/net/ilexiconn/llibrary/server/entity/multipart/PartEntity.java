@@ -4,8 +4,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class PartEntity extends Entity {
     protected float damageMultiplier;
 
     public PartEntity(EntityLiving parent, float radius, float angleYaw, float offsetY, float sizeX, float sizeY, float damageMultiplier) {
-        super(parent.world);
+        super(parent.getEntityWorld());
         this.setSize(sizeX, sizeY);
         this.parent = parent;
 
@@ -31,16 +31,16 @@ public class PartEntity extends Entity {
     }
 
     @Override
-    public void onUpdate() {
+    public void tick() {
         this.setPositionAndUpdate(this.parent.posX + this.radius * Math.cos(this.parent.renderYawOffset * (Math.PI / 180.0F) + this.angleYaw), this.parent.posY + this.offsetY, this.parent.posZ + this.radius * Math.sin(this.parent.renderYawOffset * (Math.PI / 180.0F) + this.angleYaw));
         if (!this.world.isRemote) {
             this.collideWithNearbyEntities();
         }
-        if (this.parent.isDead) {
+        if (!this.parent.isAlive()) {
             this.world.removeEntityDangerously(this);
         }
 
-        super.onUpdate();
+        super.tick();
     }
 
     @Override
@@ -59,13 +59,12 @@ public class PartEntity extends Entity {
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound nbtTag) {
+    public void readAdditional(NBTTagCompound nbtTag) {
 
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound nbtTag) {
-
+    public void writeAdditional(NBTTagCompound nbtTag) {
     }
 
     @Override

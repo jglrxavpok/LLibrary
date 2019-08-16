@@ -12,10 +12,8 @@ apply plugin: 'net.minecraftforge.gradle'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 
-version = '1.0'
-group = 'com.yourname.modid' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'modid'
-
+group = "net.ilexiconn"
+archivesBaseName = "llibrary"
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
@@ -65,8 +63,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.13.2-25.0.23'
 
-    compile "net.ilexiconn:llibrary-core:1.0.11-1.12.2"
-    embedMod "net.ilexiconn:llibrary-core:1.0.11-1.12.2"
+    // TODO deobf "net.ilexiconn:llibrary-core:1.0.11-1.12.2"
+  // TODO  embedMod "net.ilexiconn:llibrary-core:1.0.11-1.12.2"
 
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..

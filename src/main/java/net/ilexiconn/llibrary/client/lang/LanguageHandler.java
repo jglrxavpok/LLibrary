@@ -4,10 +4,10 @@ import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import net.ilexiconn.llibrary.server.core.plugin.LLibraryPlugin;
 import net.minecraft.util.text.translation.LanguageMap;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.BufferedWriter;
 import java.io.File;

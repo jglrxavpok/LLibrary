@@ -48,7 +48,7 @@ public class QubbleAnimationAction implements INBTSerializable<NBTTagCompound> {
     public void deserializeNBT(NBTTagCompound compound) {
         this.cuboid = compound.getString("cuboid");
         this.action = Action.valueOf(compound.getString("action"));
-        NBTTagCompound valueTag = compound.getCompoundTag("value");
+        NBTTagCompound valueTag = compound.getCompound("value");
         this.valueX = valueTag.getFloat("x");
         this.valueY = valueTag.getFloat("y");
         this.valueZ = valueTag.getFloat("z");
