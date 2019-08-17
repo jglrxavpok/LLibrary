@@ -19,7 +19,7 @@ public class ServerProxy {
     public void onPreInit() {
         MinecraftForge.EVENT_BUS.register(ServerEventHandler.INSTANCE);
         MinecraftForge.EVENT_BUS.register(EntityPropertiesHandler.INSTANCE);
-        CapabilityManager.INSTANCE.register(IEntityDataCapability.class, new EntityDataCapabilityStorage(), EntityDataCapabilityImplementation.class);
+        CapabilityManager.INSTANCE.register(IEntityDataCapability.class, new EntityDataCapabilityStorage(), EntityDataCapabilityImplementation::new);
     }
 
     public void onInit() {

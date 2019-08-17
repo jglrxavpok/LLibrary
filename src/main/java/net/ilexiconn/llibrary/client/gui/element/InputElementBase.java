@@ -1,17 +1,17 @@
 package net.ilexiconn.llibrary.client.gui.element;
 
 import net.ilexiconn.llibrary.LLibrary;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ChatAllowedCharacters;
+import net.minecraft.util.SharedConstants;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 @OnlyIn(Dist.CLIENT)
@@ -115,13 +115,13 @@ public abstract class InputElementBase<T extends IElementGUI> extends Element<T>
             this.setSelectionPos(0);
             return true;
         } else if (GuiScreen.isKeyComboCtrlC(key)) {
-            GuiScreen.setClipboardString(this.getSelectedText());
+            Minecraft.getInstance().keyboardListener.setClipboardString(this.getSelectedText());
             return true;
         } else if (GuiScreen.isKeyComboCtrlV(key)) {
-            this.writeText(GuiScreen.getClipboardString());
+            this.writeText(Minecraft.getInstance().keyboardListener.getClipboardString());
             return true;
         } else if (GuiScreen.isKeyComboCtrlX(key)) {
-            GuiScreen.setClipboardString(this.getSelectedText());
+            Minecraft.getInstance().keyboardListener.setClipboardString(this.getSelectedText());
             this.writeText("");
             return true;
         } else if (key == Keyboard.KEY_RETURN) {
@@ -184,7 +184,7 @@ public abstract class InputElementBase<T extends IElementGUI> extends Element<T>
                     }
                     return true;
                 default:
-                    if (ChatAllowedCharacters.isAllowedCharacter(character) && this.allowKey(key)) {
+                    if (SharedConstants.isAllowedCharacter(character) && this.allowKey(key)) {
                         this.writeText(Character.toString(character));
                         return true;
                     } else {
@@ -218,7 +218,7 @@ public abstract class InputElementBase<T extends IElementGUI> extends Element<T>
 
     public void writeText(String text) {
         String newText = "";
-        String allowedText = ChatAllowedCharacters.filterAllowedCharacters(text);
+        String allowedText = SharedConstants.filterAllowedCharacters(text);
         int start = this.cursorPosition < this.selectionEnd ? this.cursorPosition : this.selectionEnd;
         int end = this.cursorPosition < this.selectionEnd ? this.selectionEnd : this.cursorPosition;
 
