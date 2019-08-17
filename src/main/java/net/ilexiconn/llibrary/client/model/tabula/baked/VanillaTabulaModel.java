@@ -8,6 +8,7 @@ import net.ilexiconn.llibrary.client.model.tabula.container.TabulaModelContainer
 import net.ilexiconn.llibrary.client.util.Matrix;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.IUnbakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
@@ -19,7 +20,9 @@ import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
+import net.minecraftforge.common.model.animation.IClip;
 
+import javax.annotation.Nullable;
 import javax.vecmath.Point2f;
 import javax.vecmath.Point2i;
 import javax.vecmath.Point3f;
@@ -27,6 +30,7 @@ import javax.vecmath.Vector3f;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -34,7 +38,7 @@ import java.util.function.Function;
  * @since 1.0.0
  */
 @OnlyIn(Dist.CLIENT)
-public class VanillaTabulaModel implements IModel {
+public class VanillaTabulaModel implements IUnbakedModel {
     private TabulaModelContainer model;
     private ResourceLocation particle;
     private ImmutableList<ResourceLocation> textures;
@@ -47,18 +51,14 @@ public class VanillaTabulaModel implements IModel {
         this.transforms = transforms;
     }
 
-    @Override
-    public Collection<ResourceLocation> getDependencies() {
-        return ImmutableList.of();
-    }
-
-    @Override
     public Collection<ResourceLocation> getTextures() {
         return this.textures;
     }
 
     @Override
-    public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+    @Nullable
+    public IBakedModel bake(Function modelGetter, Function spriteGetter, IModelState state, boolean uvlock, VertexFormat format) {
+        Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter = (Function<ResourceLocation, TextureAtlasSprite>)spriteGetter; // for some reason javac complains if we include the generic types inside the function signature
         List<ResourceLocation> locations = Lists.newArrayList(this.textures);
         if(locations.isEmpty()) {
             locations.add(new ResourceLocation("missingno"));
@@ -158,12 +158,12 @@ public class VanillaTabulaModel implements IModel {
     private boolean hasTransparency(TabulaCubeContainer cube, TextureAtlasSprite sprite) {
         int textureWidth = this.model.getTextureWidth();
         int textureHeight = this.model.getTextureHeight();
-        int width = sprite.getIconWidth();
-        int height = sprite.getIconHeight();
+        int width = sprite.getWidth();
+        int height = sprite.getHeight();
         int frameCount = sprite.getFrameCount();
         if (frameCount > 0) {
             for (int i = 0; i < frameCount; i++) {
-                int[] pixels = sprite.getFrameTextureData(i)[0];
+                int[] pixels = sprite.frames[i].makePixelArray();
                 int[] textureOffset = cube.getTextureOffset();
                 int[] dimensions = cube.getDimensions();
                 int textureX = (textureOffset[0] * width) / textureWidth;
@@ -281,5 +281,40 @@ public class VanillaTabulaModel implements IModel {
     @Override
     public IModelState getDefaultState() {
         return TRSRTransformation.identity();
+    }
+
+    @Override
+    public Optional<? extends IClip> getClip(String name) {
+        return Optional.empty();
+    }
+
+    @Override
+    public IUnbakedModel smoothLighting(boolean value) {
+        return this;
+    }
+
+    @Override
+    public IUnbakedModel gui3d(boolean value) {
+        return this;
+    }
+
+    @Override
+    public IUnbakedModel retexture(ImmutableMap textures) {
+        return this;
+    }
+
+    @Override
+    public IUnbakedModel process(ImmutableMap customData) {
+        return this;
+    }
+
+    @Override
+    public Collection<ResourceLocation> getOverrideLocations() {
+        return ImmutableList.of();
+    }
+
+    @Override
+    public Collection<ResourceLocation> getTextures(Function<ResourceLocation, IUnbakedModel> modelGetter, Set<String> missingTextureErrors) {
+        return textures;
     }
 }

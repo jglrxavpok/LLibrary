@@ -12,6 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.vecmath.Vector3f;
 import java.lang.reflect.Type;
 
 /**
@@ -38,7 +39,10 @@ public class ItemTransformVec3fDeserializer implements JsonDeserializer<ItemTran
         scale.x = MathHelper.clamp(scale.x, -4.0F, 4.0F);
         scale.y = MathHelper.clamp(scale.y, -4.0F, 4.0F);
         scale.z = MathHelper.clamp(scale.z, -4.0F, 4.0F);
-        return new ItemTransformVec3f(rotation, translation, scale);
+        net.minecraft.client.renderer.Vector3f mcRotation = new net.minecraft.client.renderer.Vector3f(rotation.x, rotation.y, rotation.z);
+        net.minecraft.client.renderer.Vector3f mcTranslation = new net.minecraft.client.renderer.Vector3f(translation.x, translation.y, translation.z);
+        net.minecraft.client.renderer.Vector3f mcScale = new net.minecraft.client.renderer.Vector3f(scale.x, scale.y, scale.z);
+        return new ItemTransformVec3f(mcRotation, mcTranslation, mcScale);
     }
 
     private Vector3f parseVector3f(JsonObject object, String key, Vector3f defaultValue) {

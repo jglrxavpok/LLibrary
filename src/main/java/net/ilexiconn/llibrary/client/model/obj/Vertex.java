@@ -1,7 +1,6 @@
 package net.ilexiconn.llibrary.client.model.obj;
 
-import org.lwjgl.util.vector.Vector3f;
-
+import javax.vecmath.Vector3f;
 import java.util.Locale;
 
 /**

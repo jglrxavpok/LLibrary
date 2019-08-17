@@ -1,8 +1,7 @@
 package net.ilexiconn.llibrary.client.model.obj;
 
-import org.lwjgl.util.vector.Matrix3f;
-import org.lwjgl.util.vector.Vector3f;
-
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class Shape {
     public Matrix3f rotationMatrix(float angle, float x, float y, float z) {
         angle *= (float) Math.PI / 180.0F;
         Vector3f axis = new Vector3f(x, y, z);
-        axis.normalise();
+        axis.normalize();
         float s = (float) Math.sin(angle);
         float c = (float) Math.cos(angle);
         float oc = 1.0f - c;
@@ -72,7 +71,7 @@ public class Shape {
 
     public void translate(Vector3f translationVector) {
         for (Vertex vertex : this.vertexList) {
-            Vector3f.add(vertex.getPosition(), translationVector, vertex.getPosition());
+            vertex.getPosition().add(translationVector);
         }
     }
 
@@ -87,7 +86,7 @@ public class Shape {
     public void rotate(float angle, float x, float y, float z) {
         Matrix3f rotationMatrix = this.rotationMatrix(angle, x, y, z);
         for (Vertex vertex : this.vertexList) {
-            Matrix3f.transform(rotationMatrix, vertex.getPosition(), vertex.getPosition());
+            rotationMatrix.transform(vertex.getPosition());
         }
     }
 
