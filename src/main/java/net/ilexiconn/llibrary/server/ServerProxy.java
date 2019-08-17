@@ -12,7 +12,8 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 public class ServerProxy {
     public void onPreInit() {
@@ -27,9 +28,9 @@ public class ServerProxy {
     public void onPostInit() {
     }
 
-    public <T extends AbstractMessage<T>> void handleMessage(final T message, final MessageContext messageContext) {
-        WorldServer world = (WorldServer) messageContext.getServerHandler().player.world;
-        world.addScheduledTask(() -> message.onServerReceived(FMLCommonHandler.instance().getMinecraftServerInstance(), message, messageContext.getServerHandler().player, messageContext));
+    public <T extends AbstractMessage<T>> void handleMessage(final T message, final NetworkEvent.Context messageContext) {
+        WorldServer world = (WorldServer) messageContext.getSender().world;
+        world.addScheduledTask(() -> message.onServerReceived(FMLCommonHandler.instance().getMinecraftServerInstance(), message, messageContext.getSender(), messageContext));
     }
 
     public float getPartialTicks() {
@@ -37,7 +38,7 @@ public class ServerProxy {
     }
 
     public void showSnackbar(Snackbar snackbar) {
-        LLibrary.NETWORK_WRAPPER.sendToAll(new SnackbarMessage(snackbar));
+        LLibrary.NETWORK_WRAPPER.send(PacketDistributor.ALL.noArg(), new SnackbarMessage(snackbar));
     }
 
     public void setTPS(float tickRate) {

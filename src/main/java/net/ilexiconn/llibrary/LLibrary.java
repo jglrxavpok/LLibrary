@@ -1,5 +1,6 @@
 package net.ilexiconn.llibrary;
 
+import net.ilexiconn.llibrary.client.ClientProxy;
 import net.ilexiconn.llibrary.client.lang.LanguageHandler;
 import net.ilexiconn.llibrary.client.util.ItemTESRContext;
 import net.ilexiconn.llibrary.server.ServerProxy;
@@ -10,7 +11,7 @@ import net.ilexiconn.llibrary.server.core.plugin.LLibraryPlugin;
 import net.ilexiconn.llibrary.server.network.AnimationMessage;
 import net.ilexiconn.llibrary.server.network.BlockEntityMessage;
 import net.ilexiconn.llibrary.server.network.NetworkHandler;
-import net.ilexiconn.llibrary.server.network.NetworkWrapper;
+import net.ilexiconn.llibrary.server.network.NetworkChannel;
 import net.ilexiconn.llibrary.server.network.PropertiesMessage;
 import net.ilexiconn.llibrary.server.network.SnackbarMessage;
 import net.ilexiconn.llibrary.server.network.SurvivalTabMessage;
@@ -21,10 +22,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,14 +48,14 @@ public class LLibrary {
     public static final String VERSION = "1.7.15";
 
     public static final Logger LOGGER = LogManager.getLogger("LLibrary");
-    @SidedProxy(serverSide = "net.ilexiconn.llibrary.server.ServerProxy", clientSide = "net.ilexiconn.llibrary.client.ClientProxy")
-    public static ServerProxy PROXY;
+    public static ServerProxy PROXY = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
     public static LLibrary INSTANCE;
     @CapabilityInject(IEntityDataCapability.class)
     public static Capability<IEntityDataCapability> ENTITY_DATA_CAPABILITY;
     public static LLibraryConfig CONFIG = new LLibraryConfig();
-    @NetworkWrapper({ AnimationMessage.class, PropertiesMessage.class, SnackbarMessage.class, BlockEntityMessage.class, SurvivalTabMessage.class })
-    public static SimpleNetworkWrapper NETWORK_WRAPPER;
+    public static final String NETWORKING_PROTOCOL_VERSION = "1.0";
+    @NetworkChannel({ AnimationMessage.class, PropertiesMessage.class, SnackbarMessage.class, BlockEntityMessage.class, SurvivalTabMessage.class })
+    public static SimpleChannel NETWORK_WRAPPER;
     public static int QUBBLE_VERSION = 1;
     public static int QUBBLE_VANILLA_VERSION = 1;
 
@@ -78,15 +80,8 @@ public class LLibrary {
             LLibrary.LLIBRARY_ROOT.mkdirs();
         }
 
-        ModList.get().forEachModFile(file -> {
-            file.compileContent(); // TODO
-        });
-        for (ModContainer mod : ModList.get().getMods()) {
-
-            ConfigHandler.INSTANCE.injectConfig(mod, event.getAsmData());
-            NetworkHandler.INSTANCE.injectNetworkWrapper(mod, event.getAsmData());
-        }
-
+        // Inject network channels inside fields of each mod
+        ModList.get().getAllScanData().forEach(NetworkHandler.INSTANCE::injectNetworkChannels);
         LLibrary.CONFIG.load();
         LLibrary.PROXY.onPreInit();
     }

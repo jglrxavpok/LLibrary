@@ -5,19 +5,22 @@ import net.ilexiconn.llibrary.client.gui.element.Element;
 import net.ilexiconn.llibrary.client.gui.element.SliderElement;
 import net.ilexiconn.llibrary.server.property.IDoubleRangeProperty;
 import net.ilexiconn.llibrary.server.property.wrapper.DoubleRangePropertyWrapper;
-import net.minecraftforge.common.config.Property;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-public class DoubleRangeConfigProperty extends ForgeConfigProperty implements IDoubleRangeProperty {
+public class DoubleRangeConfigProperty extends ForgeConfigProperty<Double> implements IDoubleRangeProperty {
     private final double minDoubleValue;
     private final double maxDoubleValue;
-    public DoubleRangeConfigProperty(Property property) {
+    public DoubleRangeConfigProperty(ForgeConfigSpec.DoubleValue property) {
         super(property);
-        this.minDoubleValue = Double.parseDouble(this.property.getMinValue());
-        this.maxDoubleValue = Double.parseDouble(this.property.getMaxValue());
+        // TODO
+/*        this.minDoubleValue = Double.parseDouble(this.property.getMinValue());
+        this.maxDoubleValue = Double.parseDouble(this.property.getMaxValue());*/
+        this.minDoubleValue = Double.NEGATIVE_INFINITY;
+        this.maxDoubleValue = Double.POSITIVE_INFINITY;
     }
 
     @Override
@@ -30,12 +33,13 @@ public class DoubleRangeConfigProperty extends ForgeConfigProperty implements ID
 
     @Override
     public double getDouble() {
-        return this.property.getDouble();
+        return this.property.get();
     }
 
     @Override
     public void setDouble(double value) {
-        this.property.set(value);
+        //this.property.set(value);
+        throw new UnsupportedOperationException();
     }
 
     @Override

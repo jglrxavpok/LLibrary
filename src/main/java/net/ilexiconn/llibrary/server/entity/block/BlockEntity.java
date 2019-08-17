@@ -6,8 +6,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ITickable;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 /**
  * @author iLexiconn
@@ -17,8 +17,12 @@ public abstract class BlockEntity extends TileEntity implements ITickable {
     private NBTTagCompound lastCompound;
     private int trackingUpdateTimer = 0;
 
+    public BlockEntity(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
+    }
+
     @Override
-    public final void update() {
+    public final void tick() {
         int trackingUpdateFrequency = this.getTrackingUpdateTime();
         if (this.trackingUpdateTimer < trackingUpdateFrequency) {
             this.trackingUpdateTimer++;
@@ -46,7 +50,7 @@ public abstract class BlockEntity extends TileEntity implements ITickable {
 
     @Override
     public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
-        this.readFromNBT(packet.getNbtCompound());
+        this.read(packet.getNbtCompound());
     }
 
     @Override
@@ -57,14 +61,14 @@ public abstract class BlockEntity extends TileEntity implements ITickable {
     }
 
     @Override
-    public final void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
+    public final void read(NBTTagCompound compound) {
+        super.read(compound);
         this.loadNBTData(compound);
     }
 
     @Override
-    public final NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        super.writeToNBT(compound);
+    public final NBTTagCompound write(NBTTagCompound compound) {
+        super.write(compound);
         this.saveNBTData(compound);
         return compound;
     }

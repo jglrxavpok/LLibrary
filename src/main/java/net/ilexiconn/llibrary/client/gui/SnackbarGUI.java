@@ -38,7 +38,7 @@ public class SnackbarGUI extends Gui {
     public void drawSnackbar() {
         GlStateManager.pushMatrix();
         GL11.glTranslatef(0.0F, 0.0F, 500.0F);
-        ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft());
+        ScaledResolution resolution = new ScaledResolution(Minecraft.getInstance());
         switch (this.snackbar.getPosition()) {
             case UP:
                 GlStateManager.translatef(0.0F, -this.yOffset, 0.0F);

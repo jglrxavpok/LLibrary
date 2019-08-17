@@ -10,12 +10,13 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
-public class SurvivalTabGUI extends GuiButton {
+public abstract class SurvivalTabGUI extends GuiButton {
     public static final ResourceLocation TABS_TEXTURE = new ResourceLocation("llibrary", "textures/gui/survival_tab.png");
 
     private SurvivalTab survivalTab;
@@ -26,16 +27,17 @@ public class SurvivalTabGUI extends GuiButton {
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        Minecraft mc = Minecraft.getInstance();
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         GuiContainer container = (GuiContainer) mc.currentScreen;
         boolean isSelected = mc.currentScreen.getClass() == this.survivalTab.getContainer();
-        mc.renderEngine.bindTexture(SurvivalTabGUI.TABS_TEXTURE);
+        mc.textureManager.bindTexture(SurvivalTabGUI.TABS_TEXTURE);
 
         String label = I18n.format(this.survivalTab.getLabel());
         int textWidth = mc.fontRenderer.getStringWidth(label) + 4;
-        this.x = container.guiLeft + (LLibrary.CONFIG.areTabsLeftSide() ? -textWidth : container.xSize);
-        this.y = container.guiTop + this.survivalTab.getColumn() * 17 + 3;
+        this.x = container.getGuiLeft() + (LLibrary.CONFIG.areTabsLeftSide() ? -textWidth : container.getXSize());
+        this.y = container.getGuiTop() + this.survivalTab.getColumn() * 17 + 3;
         this.width = textWidth;
         this.height = 17;
 
@@ -71,8 +73,11 @@ public class SurvivalTabGUI extends GuiButton {
     }
 
     @Override
-    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-        if (super.mousePressed(mc, mouseX, mouseY)) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if(button != GLFW.GLFW_MOUSE_BUTTON_LEFT)
+            return false;
+        if (super.mouseClicked(mouseX, mouseY, button)) {
+            Minecraft mc = Minecraft.getInstance();
             if (mc.currentScreen.getClass() != this.survivalTab.getContainer()) {
                 MinecraftForge.EVENT_BUS.post(new SurvivalTabClickEvent(this.survivalTab.getLabel(), mc.player));
                 LLibrary.NETWORK_WRAPPER.sendToServer(new SurvivalTabMessage(this.survivalTab.getLabel()));

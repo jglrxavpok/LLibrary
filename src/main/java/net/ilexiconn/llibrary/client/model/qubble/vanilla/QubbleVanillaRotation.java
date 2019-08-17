@@ -37,11 +37,11 @@ public class QubbleVanillaRotation implements INBTSerializable<NBTTagCompound> {
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound compound = new NBTTagCompound();
-        compound.setByte("axis", (byte) this.axis.ordinal());
-        compound.setFloat("originX", this.originX);
-        compound.setFloat("originY", this.originY);
-        compound.setFloat("originZ", this.originZ);
-        compound.setFloat("angle", this.angle);
+        compound.putByte("axis", (byte) this.axis.ordinal());
+        compound.putFloat("originX", this.originX);
+        compound.putFloat("originY", this.originY);
+        compound.putFloat("originZ", this.originZ);
+        compound.putFloat("angle", this.angle);
         return compound;
     }
 

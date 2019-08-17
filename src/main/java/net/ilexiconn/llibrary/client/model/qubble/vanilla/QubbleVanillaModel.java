@@ -44,23 +44,23 @@ public class QubbleVanillaModel implements INBTSerializable<NBTTagCompound> {
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound compound = new NBTTagCompound();
-        compound.setString("name", this.name);
-        compound.setString("author", this.author);
-        compound.setByte("version", (byte) (this.version & 0xFF));
-        compound.setBoolean("ambientOcclusion", this.ambientOcclusion);
+        compound.putString("name", this.name);
+        compound.putString("author", this.author);
+        compound.putByte("version", (byte) (this.version & 0xFF));
+        compound.putBoolean("ambientOcclusion", this.ambientOcclusion);
         NBTTagList textures = new NBTTagList();
         for (Map.Entry<String, QubbleVanillaTexture> entry : this.textures.entrySet()) {
             NBTTagCompound texture = new NBTTagCompound();
-            texture.setString("key", entry.getKey());
-            texture.setTag("value", entry.getValue().serializeNBT());
-            textures.appendTag(texture);
+            texture.putString("key", entry.getKey());
+            texture.put("value", entry.getValue().serializeNBT());
+            textures.add(texture);
         }
-        compound.setTag("textures", textures);
+        compound.put("textures", textures);
         NBTTagList cuboids = new NBTTagList();
         for (QubbleVanillaCuboid cuboid : this.cuboids) {
-            cuboids.appendTag(cuboid.serializeNBT());
+            cuboids.add(cuboid.serializeNBT());
         }
-        compound.setTag("cuboids", cuboids);
+        compound.put("cuboids", cuboids);
         return compound;
     }
 
@@ -69,19 +69,19 @@ public class QubbleVanillaModel implements INBTSerializable<NBTTagCompound> {
         this.name = compound.getString("name");
         this.author = compound.getString("author");
         this.version = compound.getByte("version") & 0xFF;
-        if (compound.hasKey("ambientOcclusion")) {
+        if (compound.contains("ambientOcclusion")) {
             this.ambientOcclusion = compound.getBoolean("ambientOcclusion");
         }
-        NBTTagList textures = compound.getTagList("textures", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < textures.tagCount(); i++) {
-            NBTTagCompound texture = textures.getCompoundTagAt(i);
-            if (texture.hasKey("key") && texture.hasKey("value")) {
-                this.addTexture(texture.getString("key"), QubbleVanillaTexture.deserialize(texture.getCompoundTag("value")));
+        NBTTagList textures = compound.getList("textures", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < textures.size(); i++) {
+            NBTTagCompound texture = textures.getCompound(i);
+            if (texture.contains("key") && texture.contains("value")) {
+                this.addTexture(texture.getString("key"), QubbleVanillaTexture.deserialize(texture.getCompound("value")));
             }
         }
-        NBTTagList cuboids = compound.getTagList("cuboids", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < cuboids.tagCount(); i++) {
-            this.addCuboid(QubbleVanillaCuboid.deserialize(cuboids.getCompoundTagAt(i)));
+        NBTTagList cuboids = compound.getList("cuboids", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < cuboids.size(); i++) {
+            this.addCuboid(QubbleVanillaCuboid.deserialize(cuboids.getCompound(i)));
         }
     }
 

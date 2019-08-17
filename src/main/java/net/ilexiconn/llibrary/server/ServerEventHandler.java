@@ -28,6 +28,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -118,7 +119,7 @@ public enum ServerEventHandler {
                 if (tracker.isTrackerReady()) {
                     tracker.onSync();
                     PropertiesMessage message = new PropertiesMessage(tracker.getProperties(), tracker.getEntity());
-                    LLibrary.NETWORK_WRAPPER.sendTo(message, player);
+                    LLibrary.NETWORK_WRAPPER.send(PacketDistributor.PLAYER.with(() -> player), message);
                 }
             }
         }
@@ -157,7 +158,7 @@ public enum ServerEventHandler {
                     Map.Entry<EntityPlayerMP, List<PropertiesTracker<?>>> trackerEntry = iterator.next();
                     EntityPlayerMP player = trackerEntry.getKey();
                     WorldServer playerWorld = DimensionManager.getWorld(player.dimension);
-                    if (player == null || player.isDead || playerWorld == null || !playerWorld.loadedEntityList.contains(player)) {
+                    if (player == null || !player.isAlive() || playerWorld == null || !playerWorld.loadedEntityList.contains(player)) {
                         trackerEntry.getValue().forEach(PropertiesTracker::removeTracker);
                         iterator.remove();
                     } else {
@@ -166,7 +167,7 @@ public enum ServerEventHandler {
                             PropertiesTracker tracker = it.next();
                             Entity entity = tracker.getEntity();
                             WorldServer entityWorld = DimensionManager.getWorld(entity.dimension);
-                            if (entity == null || entity.isDead || entityWorld == null || !entityWorld.loadedEntityList.contains(entity)) {
+                            if (entity == null || !entity.isAlive() || entityWorld == null || !entityWorld.loadedEntityList.contains(entity)) {
                                 it.remove();
                                 tracker.removeTracker();
                             }

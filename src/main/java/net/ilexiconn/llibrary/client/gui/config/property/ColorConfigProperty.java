@@ -4,10 +4,10 @@ import net.ilexiconn.llibrary.client.gui.config.ConfigGUI;
 import net.ilexiconn.llibrary.client.gui.element.ColorElement;
 import net.ilexiconn.llibrary.client.gui.element.Element;
 import net.ilexiconn.llibrary.server.property.IIntProperty;
-import net.minecraftforge.common.config.Property;
+import net.minecraftforge.common.ForgeConfigSpec;
 
-public class ColorConfigProperty extends ForgeConfigProperty implements IIntProperty {
-    public ColorConfigProperty(Property configProperty) {
+public class ColorConfigProperty extends ForgeConfigProperty<Integer> implements IIntProperty {
+    public ColorConfigProperty(ForgeConfigSpec.IntValue configProperty) {
         super(configProperty);
     }
 
@@ -18,12 +18,13 @@ public class ColorConfigProperty extends ForgeConfigProperty implements IIntProp
 
     @Override
     public int getInt() {
-        return this.property.getInt();
+        return this.property.get();
     }
 
     @Override
     public void setInt(int value) {
-        this.property.set(value);
+        //this.property.set(value);
+        throw new UnsupportedOperationException();
     }
 
     @Override

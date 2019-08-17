@@ -3,10 +3,10 @@ package net.ilexiconn.llibrary.client.gui.config.property;
 import net.ilexiconn.llibrary.client.gui.config.ConfigGUI;
 import net.ilexiconn.llibrary.client.gui.element.Element;
 import net.ilexiconn.llibrary.client.gui.element.PropertyInputElement;
-import net.minecraftforge.common.config.Property;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class StringConfigProperty extends StringConfigPropertyBase {
-    public StringConfigProperty(Property property) {
+    public StringConfigProperty(ForgeConfigSpec.ConfigValue<String> property) {
         super(property);
     }
 

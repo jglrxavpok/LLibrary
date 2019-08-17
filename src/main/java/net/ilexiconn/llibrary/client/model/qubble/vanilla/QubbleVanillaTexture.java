@@ -55,25 +55,25 @@ public class QubbleVanillaTexture implements INBTSerializable<NBTTagCompound> {
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound compound = new NBTTagCompound();
-        compound.setString("texture", this.texture);
+        compound.putString("texture", this.texture);
         NBTTagList propertyList = new NBTTagList();
         for (Map.Entry<String, String> entry : this.properties.entrySet()) {
             NBTTagCompound property = new NBTTagCompound();
-            property.setString("key", entry.getKey());
-            property.setString("value", entry.getValue());
-            propertyList.appendTag(property);
+            property.putString("key", entry.getKey());
+            property.putString("value", entry.getValue());
+            propertyList.add(property);
         }
-        compound.setTag("properties", propertyList);
+        compound.put("properties", propertyList);
         return compound;
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound compound) {
         this.texture = compound.getString("texture");
-        NBTTagList propertyList = compound.getTagList("properties", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < propertyList.tagCount(); i++) {
-            NBTTagCompound property = propertyList.getCompoundTagAt(i);
-            if (property.hasKey("key") && property.hasKey("value")) {
+        NBTTagList propertyList = compound.getList("properties", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < propertyList.size(); i++) {
+            NBTTagCompound property = propertyList.getCompound(i);
+            if (property.contains("key") && property.contains("value")) {
                 this.properties.put(property.getString("key"), property.getString("value"));
             }
         }

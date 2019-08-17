@@ -3,8 +3,8 @@ package net.ilexiconn.llibrary.client.gui.element;
 import net.ilexiconn.llibrary.LLibrary;
 import net.ilexiconn.llibrary.server.property.IStringSelectionProperty;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class DropdownButtonElement<T extends IElementGUI> extends Element<T> {
@@ -29,7 +29,7 @@ public class DropdownButtonElement<T extends IElementGUI> extends Element<T> {
         this.drawRectangle(this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight(), this.isEnabled() && (this.isSelected(mouseX, mouseY) || this.dropped) ? this.getColorScheme().getPrimaryColor() : this.getColorScheme().getSecondaryColor());
         FontRenderer fontRenderer = this.gui.getFontRenderer();
         String text = this.selected.getString();
-        fontRenderer.drawString(text, this.getPosX() + (this.getWidth() / 2) - (fontRenderer.getStringWidth(text) / 2), this.getPosY() + (this.getHeight() / 2) - (fontRenderer.FONT_HEIGHT / 2), LLibrary.CONFIG.getTextColor(), false);
+        fontRenderer.drawString(text, this.getPosX() + (this.getWidth() / 2) - (fontRenderer.getStringWidth(text) / 2), this.getPosY() + (this.getHeight() / 2) - (fontRenderer.FONT_HEIGHT / 2), LLibrary.CONFIG.getTextColor());
         if (this.dropped) {
             this.drawRectangle(this.getPosX(), this.getPosY() + this.getHeight(), this.dropdownWidth, this.selected.getValidStringValues().size() * 12, this.getColorScheme().getSecondaryColor());
             float y = this.getPosY() + this.getHeight() + 2;
@@ -37,7 +37,7 @@ public class DropdownButtonElement<T extends IElementGUI> extends Element<T> {
                 if (this.isEntrySelected(mouseX, mouseY, y)) {
                     this.drawRectangle(this.getPosX(), y - 2, this.dropdownWidth, 12, this.getColorScheme().getPrimaryColor());
                 }
-                fontRenderer.drawString(entry, this.getPosX() + 3, y, LLibrary.CONFIG.getTextColor(), false);
+                fontRenderer.drawString(entry, this.getPosX() + 3, y, LLibrary.CONFIG.getTextColor());
                 y += 12.0F;
             }
         }

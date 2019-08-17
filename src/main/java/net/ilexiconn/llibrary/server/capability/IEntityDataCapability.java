@@ -1,7 +1,7 @@
 package net.ilexiconn.llibrary.server.capability;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
@@ -13,7 +13,7 @@ import java.util.List;
  * @author gegy1000
  * @since 1.0.0
  */
-public interface IEntityDataCapability extends ICapabilitySerializable<NBTBase> {
+public interface IEntityDataCapability extends ICapabilitySerializable<INBTBase> {
     /**
      * Initialize this data context.
      *

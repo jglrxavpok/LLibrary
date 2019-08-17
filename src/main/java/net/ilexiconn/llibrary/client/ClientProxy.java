@@ -21,7 +21,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +33,7 @@ import java.util.Set;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientProxy extends ServerProxy {
-    public static final Minecraft MINECRAFT = Minecraft.getMinecraft();
+    public static final Minecraft MINECRAFT = Minecraft.getInstance();
     public static final int UPDATE_BUTTON_ID = "UPDATE_BUTTON_ID".hashCode();
     public static final List<SnackbarGUI> SNACKBAR_LIST = new ArrayList<>();
     public static final Set<String> PATRONS = new HashSet<>();
@@ -75,12 +77,16 @@ public class ClientProxy extends ServerProxy {
     }
 
     @Override
-    public <T extends AbstractMessage<T>> void handleMessage(final T message, final MessageContext messageContext) {
-        if (messageContext.side.isServer()) {
-            super.handleMessage(message, messageContext);
-        } else {
+    public <T extends AbstractMessage<T>> void handleMessage(final T message, final NetworkEvent.Context messageContext) {
+        DistExecutor.runForDist(() -> () -> {
+            // client
             ClientProxy.MINECRAFT.addScheduledTask(() -> message.onClientReceived(ClientProxy.MINECRAFT, message, ClientProxy.MINECRAFT.player, messageContext));
-        }
+            return null;
+        }, () -> () -> {
+            // server
+            super.handleMessage(message, messageContext);
+            return null;
+        });
     }
 
     @Override

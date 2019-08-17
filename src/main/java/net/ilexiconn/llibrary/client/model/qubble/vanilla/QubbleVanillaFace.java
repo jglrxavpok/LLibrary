@@ -108,32 +108,32 @@ public class QubbleVanillaFace implements INBTSerializable<NBTTagCompound> {
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound compound = new NBTTagCompound();
-        compound.setByte("facing", (byte) this.facing.ordinal());
+        compound.putByte("facing", (byte) this.facing.ordinal());
         if (this.cullface != null) {
-            compound.setByte("cullface", (byte) this.cullface.ordinal());
+            compound.putByte("cullface", (byte) this.cullface.ordinal());
         }
         if (this.texture != null) {
-            compound.setString("texture", this.texture);
+            compound.putString("texture", this.texture);
         }
-        compound.setFloat("minU", this.minU);
-        compound.setFloat("minV", this.minV);
-        compound.setFloat("maxU", this.maxU);
-        compound.setFloat("maxV", this.maxV);
-        compound.setBoolean("enabled", this.enabled);
+        compound.putFloat("minU", this.minU);
+        compound.putFloat("minV", this.minV);
+        compound.putFloat("maxU", this.maxU);
+        compound.putFloat("maxV", this.maxV);
+        compound.putBoolean("enabled", this.enabled);
         return compound;
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound compound) {
         this.facing = EnumFacing.values()[compound.getByte("facing")];
-        if (compound.hasKey("cullface")) {
+        if (compound.contains("cullface")) {
             this.setCullface(EnumFacing.values()[compound.getByte("cullface")]);
         }
-        if (compound.hasKey("texture")) {
+        if (compound.contains("texture")) {
             this.setTexture(compound.getString("texture"));
         }
         this.setUV(compound.getFloat("minU"), compound.getFloat("minV"), compound.getFloat("maxU"), compound.getFloat("maxV"));
-        if (compound.hasKey("enabled")) {
+        if (compound.contains("enabled")) {
             this.setEnabled(compound.getBoolean("enabled"));
         } else {
             this.setEnabled(true);

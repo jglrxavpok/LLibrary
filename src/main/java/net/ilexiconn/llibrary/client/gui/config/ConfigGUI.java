@@ -14,13 +14,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,11 +41,11 @@ public class ConfigGUI extends ElementGUI {
 
     private Mod mod;
 
-    public ConfigGUI(GuiScreen parent, Object mod, Configuration config) {
+    public ConfigGUI(GuiScreen parent, Object mod, ForgeConfigSpec config) {
         this(parent, mod, config, "Mod List");
     }
 
-    public ConfigGUI(GuiScreen parent, Object mod, Configuration config, String parentName) {
+    public ConfigGUI(GuiScreen parent, Object mod, ForgeConfigSpec config, String parentName) {
         this.parent = parent;
         this.parentName = parentName;
         if (!mod.getClass().isAnnotationPresent(Mod.class)) {

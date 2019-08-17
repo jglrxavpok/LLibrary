@@ -10,6 +10,7 @@ import net.minecraft.block.BlockVine;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
+import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.math.BlockPos;
@@ -93,7 +94,7 @@ public class StructureBuilder extends StructureGenerator {
                         EnumFacing facing = transform(state.get(BlockStairs.FACING), frontVec, topVec, perpVec);
                         EnumFacing perp = transform(EnumFacing.UP, frontVec, topVec, perpVec);
                         if (facing.getAxis() == Axis.Y) {
-                            if (state.get(BlockStairs.HALF) == EnumHalf.BOTTOM) {
+                            if (state.get(BlockSlab.TYPE) == SlabType.BOTTOM) {
                                 perp = perp.getOpposite();
                                 if (facing == EnumFacing.UP) {
                                     state = state.cycle(BlockStairs.HALF);
@@ -110,7 +111,7 @@ public class StructureBuilder extends StructureGenerator {
                         }
                     } else if (state.getBlock() instanceof BlockSlab) {
                         if (inverted) {
-                            state = state.cycle(BlockSlab.HALF);
+                            state = state.cycle(BlockSlab.TYPE);
                         }
                     } else if (state.getBlock() instanceof BlockVine) {
                         EnumFacing facing = transform(state.get(BlockVine.NORTH) ? EnumFacing.NORTH : state.get(BlockVine.EAST) ? EnumFacing.EAST : state.get(BlockVine.SOUTH) ? EnumFacing.SOUTH : EnumFacing.WEST, frontVec, topVec, perpVec);

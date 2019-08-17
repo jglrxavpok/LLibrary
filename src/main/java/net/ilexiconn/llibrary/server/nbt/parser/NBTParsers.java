@@ -137,8 +137,8 @@ public enum NBTParsers implements INBTParser {
                 valueByteArray[i / 8] |= (byte) ((valueBoolArray[i] ? 1 : 0) << (i % 8));
             }
             NBTTagCompound byteArrayCompound = new NBTTagCompound();
-            byteArrayCompound.setInt("length", valueBoolArray.length);
-            byteArrayCompound.setByteArray("array", valueByteArray);
+            byteArrayCompound.putInt("length", valueBoolArray.length);
+            byteArrayCompound.putByteArray("array", valueByteArray);
             return byteArrayCompound;
         }
     },
@@ -163,8 +163,8 @@ public enum NBTParsers implements INBTParser {
                 valueByteArray[i / 8] |= (byte) ((valueBoolArray[i] ? 1 : 0) << (i % 8));
             }
             NBTTagCompound byteArrayCompound = new NBTTagCompound();
-            byteArrayCompound.setInt("length", valueBoolArray.length);
-            byteArrayCompound.setByteArray("array", valueByteArray);
+            byteArrayCompound.putInt("length", valueBoolArray.length);
+            byteArrayCompound.putByteArray("array", valueByteArray);
             return byteArrayCompound;
         }
     },
@@ -504,9 +504,9 @@ public enum NBTParsers implements INBTParser {
         @Override
         public INBTBase parseValue(Object value) {
             NBTTagCompound blockPosCompound = new NBTTagCompound();
-            blockPosCompound.setInt("x", ((BlockPos) value).getX());
-            blockPosCompound.setInt("y", ((BlockPos) value).getY());
-            blockPosCompound.setInt("z", ((BlockPos) value).getZ());
+            blockPosCompound.putInt("x", ((BlockPos) value).getX());
+            blockPosCompound.putInt("y", ((BlockPos) value).getY());
+            blockPosCompound.putInt("z", ((BlockPos) value).getZ());
             return blockPosCompound;
         }
     };

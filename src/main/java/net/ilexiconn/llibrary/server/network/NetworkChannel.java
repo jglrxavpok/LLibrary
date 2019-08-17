@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface NetworkWrapper {
+public @interface NetworkChannel {
     /**
      * @return an array of classes of abstract messages to be registered
      */

@@ -4,7 +4,7 @@ import net.ilexiconn.llibrary.client.gui.config.ConfigGUI;
 import net.ilexiconn.llibrary.client.gui.element.DropdownButtonElement;
 import net.ilexiconn.llibrary.client.gui.element.Element;
 import net.ilexiconn.llibrary.server.property.IStringSelectionProperty;
-import net.minecraftforge.common.config.Property;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -13,10 +13,11 @@ import java.util.Set;
 public class StringSelectionConfigProperty extends StringConfigPropertyBase implements IStringSelectionProperty {
     private final Set<String> validStringValues;
 
-    public StringSelectionConfigProperty(Property property) {
+    // TODO: Are String arrays usable?
+    public StringSelectionConfigProperty(ForgeConfigSpec.ConfigValue<String> property) {
         super(property);
         this.validStringValues = new HashSet<>();
-        Collections.addAll(this.validStringValues, property.getValidValues());
+// TODO        Collections.addAll(this.validStringValues, property.getValidValues());
     }
 
     @Override

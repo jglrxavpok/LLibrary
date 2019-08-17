@@ -8,8 +8,8 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.geom.RectangularShape;
@@ -198,7 +198,7 @@ public class Element<T extends IElementGUI> {
     protected void drawRectangle(double x, double y, double width, double height, int color) {
         GlStateManager.disableTexture2D();
         GlStateManager.enableBlend();
-        GlStateManager.disableAlpha();
+        GlStateManager.disableAlphaTest();
         float a = (float) (color >> 24 & 0xFF) / 255.0F;
         float r = (float) (color >> 16 & 0xFF) / 255.0F;
         float g = (float) (color >> 8 & 0xFF) / 255.0F;
@@ -212,7 +212,7 @@ public class Element<T extends IElementGUI> {
         BufferBuilder.pos(x, y, 0.0).color(r, g, b, a).endVertex();
         tessellator.draw();
         GlStateManager.disableBlend();
-        GlStateManager.enableAlpha();
+        GlStateManager.enableAlphaTest();
         GlStateManager.enableTexture2D();
     }
 
@@ -223,7 +223,7 @@ public class Element<T extends IElementGUI> {
     protected void drawTexturedRectangle(double x, double y, double width, double height, int color) {
         GlStateManager.enableTexture2D();
         GlStateManager.enableBlend();
-        GlStateManager.disableAlpha();
+        GlStateManager.disableAlphaTest();
         float a = (float) (color >> 24 & 0xFF) / 255.0F;
         float r = (float) (color >> 16 & 0xFF) / 255.0F;
         float g = (float) (color >> 8 & 0xFF) / 255.0F;
@@ -237,7 +237,7 @@ public class Element<T extends IElementGUI> {
         BufferBuilder.pos(x, y, 0.0).tex(0.0F, 0.0F).color(r, g, b, a).endVertex();
         tessellator.draw();
         GlStateManager.disableBlend();
-        GlStateManager.enableAlpha();
+        GlStateManager.enableAlphaTest();
         GlStateManager.disableTexture2D();
     }
 

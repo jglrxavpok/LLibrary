@@ -4,10 +4,11 @@ import io.netty.buffer.ByteBuf;
 import net.ilexiconn.llibrary.server.animation.IAnimatedEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 public class AnimationMessage extends AbstractMessage<AnimationMessage> {
     private int entityID;
@@ -24,7 +25,7 @@ public class AnimationMessage extends AbstractMessage<AnimationMessage> {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void onClientReceived(Minecraft client, AnimationMessage message, EntityPlayer player, MessageContext messageContext) {
+    public void onClientReceived(Minecraft client, AnimationMessage message, EntityPlayer player, NetworkEvent.Context messageContext) {
         IAnimatedEntity entity = (IAnimatedEntity) player.world.getEntityByID(message.entityID);
         if (entity != null) {
             if (message.index == -1) {
@@ -37,19 +38,24 @@ public class AnimationMessage extends AbstractMessage<AnimationMessage> {
     }
 
     @Override
-    public void onServerReceived(MinecraftServer server, AnimationMessage message, EntityPlayer player, MessageContext messageContext) {
+    public void onServerReceived(MinecraftServer server, AnimationMessage message, EntityPlayer player, NetworkEvent.Context messageContext) {
 
     }
 
     @Override
-    public void fromBytes(ByteBuf byteBuf) {
+    public void fromBytes(PacketBuffer byteBuf) {
         this.entityID = byteBuf.readInt();
         this.index = byteBuf.readInt();
     }
 
     @Override
-    public void toBytes(ByteBuf byteBuf) {
+    public void toBytes(PacketBuffer byteBuf) {
         byteBuf.writeInt(this.entityID);
         byteBuf.writeInt(this.index);
+    }
+
+    @Override
+    public boolean canSideReceive(Dist side) {
+        return side.isClient();
     }
 }

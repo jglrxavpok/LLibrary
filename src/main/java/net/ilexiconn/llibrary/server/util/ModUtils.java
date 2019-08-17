@@ -5,6 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
@@ -12,6 +13,8 @@ import net.minecraftforge.registries.RegistryManager;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author iLexiconn
@@ -24,7 +27,9 @@ public class ModUtils {
 
     static {
         resourceIDToContainerMap.put("minecraft", Loader.instance().getMinecraftModContainer());
-        Map<String, ModContainer> map = Loader.instance().getIndexedModList();
+        Map<String, ModContainer> map = ModList.get().getMods().stream()
+                .map(info -> ModList.get().getModContainerById(info.getModId()))
+                .collect(Collectors.toMap(modContainer -> modContainer.get().getModId(), Optional::get));
         for (Map.Entry<String, ModContainer> modEntry : map.entrySet()) {
             String resourceID = modEntry.getKey().toLowerCase(Locale.ENGLISH);
             ModContainer modContainer = modEntry.getValue();

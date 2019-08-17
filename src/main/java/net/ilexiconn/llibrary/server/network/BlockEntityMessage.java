@@ -1,16 +1,15 @@
 package net.ilexiconn.llibrary.server.network;
 
-import io.netty.buffer.ByteBuf;
 import net.ilexiconn.llibrary.server.entity.block.BlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 public class BlockEntityMessage extends AbstractMessage<BlockEntityMessage> {
     private BlockPos pos;
@@ -28,7 +27,7 @@ public class BlockEntityMessage extends AbstractMessage<BlockEntityMessage> {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void onClientReceived(Minecraft client, BlockEntityMessage message, EntityPlayer player, MessageContext messageContext) {
+    public void onClientReceived(Minecraft client, BlockEntityMessage message, EntityPlayer player, NetworkEvent.Context messageContext) {
         BlockPos pos = message.pos;
         if (player.world.isBlockLoaded(pos)) {
             BlockEntity blockEntity = (BlockEntity) player.world.getTileEntity(pos);
@@ -37,26 +36,26 @@ public class BlockEntityMessage extends AbstractMessage<BlockEntityMessage> {
     }
 
     @Override
-    public void onServerReceived(MinecraftServer server, BlockEntityMessage message, EntityPlayer player, MessageContext messageContext) {
+    public void onServerReceived(MinecraftServer server, BlockEntityMessage message, EntityPlayer player, NetworkEvent.Context messageContext) {
 
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    public void fromBytes(PacketBuffer buf) {
         this.pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
-        this.compound = ByteBufUtils.readTag(buf);
+        this.compound = buf.readCompoundTag();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeInt(this.pos.getX());
         buf.writeInt(this.pos.getY());
         buf.writeInt(this.pos.getZ());
-        ByteBufUtils.writeTag(buf, this.compound);
+        buf.writeCompoundTag(this.compound);
     }
 
     @Override
-    public boolean registerOnSide(Side side) {
+    public boolean canSideReceive(Dist side) {
         return side.isClient();
     }
 }

@@ -3,24 +3,22 @@ package net.ilexiconn.llibrary.server.network;
 import net.ilexiconn.llibrary.LLibrary;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 /**
  * @author iLexiconn
  * @since 1.0.0
  */
-public abstract class AbstractMessage<T extends AbstractMessage<T>> implements IMessage, IMessageHandler<T, IMessage> {
-    @Override
-    public IMessage onMessage(T message, MessageContext messageContext) {
-        LLibrary.PROXY.handleMessage(message, messageContext);
+public abstract class AbstractMessage<T extends AbstractMessage<T>> {
 
-        return null;
+    public void onMessage(Supplier<NetworkEvent.Context> messageContextSupplier) {
+        LLibrary.PROXY.handleMessage((T)this, messageContextSupplier.get());
     }
 
     /**
@@ -33,7 +31,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
      * @param messageContext the message context.
      */
     @OnlyIn(Dist.CLIENT)
-    public abstract void onClientReceived(Minecraft client, T message, EntityPlayer player, MessageContext messageContext);
+    public abstract void onClientReceived(Minecraft client, T message, EntityPlayer player, NetworkEvent.Context messageContext);
 
     /**
      * Executes when the message is received on SERVER side. Never use fields directly from the class you're in, but
@@ -44,14 +42,14 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
      * @param player         The player who sent the message to the server.
      * @param messageContext the message context.
      */
-    public abstract void onServerReceived(MinecraftServer server, T message, EntityPlayer player, MessageContext messageContext);
+    public abstract void onServerReceived(MinecraftServer server, T message, EntityPlayer player, NetworkEvent.Context messageContext);
 
     /**
      * @param side the current side
-     * @return whether this message should be registered on the given side. Only used for messages registered with {@link net.ilexiconn.llibrary.server.network.NetworkHandler#registerMessage(SimpleNetworkWrapper, Class)}
+     * @return whether this message should be registered on the given side. Only used for messages registered with {@link net.ilexiconn.llibrary.server.network.NetworkHandler#registerMessage(net.minecraftforge.fml.network.simple.SimpleChannel, Class)}
      */
-    // TODO: 1.13: Make abstract and rename to canSideReceive
-    public boolean registerOnSide(Side side) {
-        return true;
-    }
+    public abstract boolean canSideReceive(Dist side);
+
+    public abstract void toBytes(PacketBuffer packetBuffer);
+    public abstract void fromBytes(PacketBuffer packetBuffer);
 }

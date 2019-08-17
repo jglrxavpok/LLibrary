@@ -149,22 +149,22 @@ public class QubbleVanillaCuboid implements INBTSerializable<NBTTagCompound> {
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound compound = new NBTTagCompound();
-        compound.setString("name", this.name);
-        compound.setFloat("fromX", this.fromX);
-        compound.setFloat("fromY", this.fromY);
-        compound.setFloat("fromZ", this.fromZ);
-        compound.setFloat("toX", this.toX);
-        compound.setFloat("toY", this.toY);
-        compound.setFloat("toZ", this.toZ);
-        compound.setBoolean("shade", this.shade);
+        compound.putString("name", this.name);
+        compound.putFloat("fromX", this.fromX);
+        compound.putFloat("fromY", this.fromY);
+        compound.putFloat("fromZ", this.fromZ);
+        compound.putFloat("toX", this.toX);
+        compound.putFloat("toY", this.toY);
+        compound.putFloat("toZ", this.toZ);
+        compound.putBoolean("shade", this.shade);
         if (this.rotation != null) {
-            compound.setTag("rotation", this.rotation.serializeNBT());
+            compound.put("rotation", this.rotation.serializeNBT());
         }
         NBTTagList faces = new NBTTagList();
         for (QubbleVanillaFace face : this.faces) {
-            faces.appendTag(face.serializeNBT());
+            faces.add(face.serializeNBT());
         }
-        compound.setTag("faces", faces);
+        compound.put("faces", faces);
         return compound;
     }
 
@@ -173,15 +173,15 @@ public class QubbleVanillaCuboid implements INBTSerializable<NBTTagCompound> {
         this.name = compound.getString("name");
         this.setFrom(compound.getFloat("fromX"), compound.getFloat("fromY"), compound.getFloat("fromZ"));
         this.setTo(compound.getFloat("toX"), compound.getFloat("toY"), compound.getFloat("toZ"));
-        if (compound.hasKey("rotation")) {
-            this.rotation = QubbleVanillaRotation.deserialize(compound.getCompoundTag("rotation"));
+        if (compound.contains("rotation")) {
+            this.rotation = QubbleVanillaRotation.deserialize(compound.getCompound("rotation"));
         }
-        if (compound.hasKey("shade")) {
+        if (compound.contains("shade")) {
             this.shade = compound.getBoolean("shade");
         }
-        NBTTagList faces = compound.getTagList("faces", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < faces.tagCount(); i++) {
-            this.setFace(QubbleVanillaFace.deserialize(faces.getCompoundTagAt(i)));
+        NBTTagList faces = compound.getList("faces", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < faces.size(); i++) {
+            this.setFace(QubbleVanillaFace.deserialize(faces.getCompound(i)));
         }
     }
 

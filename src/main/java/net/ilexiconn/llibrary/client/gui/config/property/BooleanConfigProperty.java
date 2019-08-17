@@ -4,10 +4,10 @@ import net.ilexiconn.llibrary.client.gui.config.ConfigGUI;
 import net.ilexiconn.llibrary.client.gui.element.CheckboxElement;
 import net.ilexiconn.llibrary.client.gui.element.Element;
 import net.ilexiconn.llibrary.server.property.IBooleanProperty;
-import net.minecraftforge.common.config.Property;
+import net.minecraftforge.common.ForgeConfigSpec;
 
-public class BooleanConfigProperty extends ForgeConfigProperty implements IBooleanProperty {
-    public BooleanConfigProperty(Property configProperty) {
+public class BooleanConfigProperty extends ForgeConfigProperty<Boolean> implements IBooleanProperty {
+    public BooleanConfigProperty(ForgeConfigSpec.BooleanValue configProperty) {
         super(configProperty);
     }
 
@@ -18,12 +18,13 @@ public class BooleanConfigProperty extends ForgeConfigProperty implements IBoole
 
     @Override
     public boolean getBoolean() {
-        return this.property.getBoolean();
+        return this.property.get();
     }
 
     @Override
     public void setBoolean(boolean value) {
-        this.property.set(value);
+        //this.property.set(value);
+        throw new UnsupportedOperationException();
     }
 
     @Override

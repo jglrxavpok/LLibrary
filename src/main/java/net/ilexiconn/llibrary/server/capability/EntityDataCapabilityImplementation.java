@@ -2,11 +2,12 @@ package net.ilexiconn.llibrary.server.capability;
 
 import net.ilexiconn.llibrary.LLibrary;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -38,11 +39,6 @@ public class EntityDataCapabilityImplementation implements IEntityDataCapability
         this(new ArrayList<>());
     }
 
-    @Deprecated
-    public static IEntityDataCapability getCapability(Entity entity) {
-        return entity.getCapability(LLibrary.ENTITY_DATA_CAPABILITY, null);
-    }
-
     @Override
     public void init(Entity entity, World world, boolean init) {
         if (init) {
@@ -57,14 +53,14 @@ public class EntityDataCapabilityImplementation implements IEntityDataCapability
         for (IEntityData entityData : this.attachedData.values()) {
             NBTTagCompound managerTag = new NBTTagCompound();
             entityData.saveNBTData(managerTag);
-            compound.setTag(entityData.getID(), managerTag);
+            compound.put(entityData.getID(), managerTag);
         }
     }
 
     @Override
     public void loadFromNBT(NBTTagCompound compound) {
         for (IEntityData entityData : this.attachedData.values()) {
-            NBTTagCompound managerTag = compound.getCompoundTag(entityData.getID());
+            NBTTagCompound managerTag = compound.getCompound(entityData.getID());
             entityData.loadNBTData(managerTag);
         }
     }
@@ -91,26 +87,21 @@ public class EntityDataCapabilityImplementation implements IEntityDataCapability
     }
 
     @Override
-    public NBTBase serializeNBT() {
+    public INBTBase serializeNBT() {
         Capability<IEntityDataCapability> capability = LLibrary.ENTITY_DATA_CAPABILITY;
         return capability.getStorage().writeNBT(capability, this, null);
     }
 
     @Override
-    public void deserializeNBT(NBTBase nbt) {
+    public void deserializeNBT(INBTBase nbt) {
         Capability<IEntityDataCapability> capability = LLibrary.ENTITY_DATA_CAPABILITY;
         capability.getStorage().readNBT(capability, this, null, nbt);
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-        return LLibrary.ENTITY_DATA_CAPABILITY == capability;
-    }
-
-    @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, EnumFacing facing) {
         if (capability == LLibrary.ENTITY_DATA_CAPABILITY) {
-            return LLibrary.ENTITY_DATA_CAPABILITY.cast(this);
+            return (LazyOptional<T>) LazyOptional.of(() -> this);
         }
         return null;
     }

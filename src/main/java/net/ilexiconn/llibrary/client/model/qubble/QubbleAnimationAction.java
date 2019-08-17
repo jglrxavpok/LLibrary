@@ -34,13 +34,13 @@ public class QubbleAnimationAction implements INBTSerializable<NBTTagCompound> {
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound compound = new NBTTagCompound();
-        compound.setString("cuboid", this.cuboid);
-        compound.setString("action", this.action.name());
+        compound.putString("cuboid", this.cuboid);
+        compound.putString("action", this.action.name());
         NBTTagCompound valueTag = new NBTTagCompound();
-        valueTag.setFloat("x", this.valueX);
-        valueTag.setFloat("y", this.valueY);
-        valueTag.setFloat("z", this.valueZ);
-        compound.setTag("value", valueTag);
+        valueTag.putFloat("x", this.valueX);
+        valueTag.putFloat("y", this.valueY);
+        valueTag.putFloat("z", this.valueZ);
+        compound.put("value", valueTag);
         return compound;
     }
 

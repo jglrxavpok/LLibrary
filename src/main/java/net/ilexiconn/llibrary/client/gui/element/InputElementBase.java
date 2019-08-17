@@ -9,8 +9,8 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -58,7 +58,7 @@ public abstract class InputElementBase<T extends IElementGUI> extends Element<T>
 
         if (!displayString.isEmpty()) {
             String s = verticalCursor ? displayString.substring(0, cursor) : displayString;
-            line = fontRenderer.drawString(s, x + 3, y + 1 + this.getHeight() / 2 - fontRenderer.FONT_HEIGHT / 2, LLibrary.CONFIG.getTextColor(), false);
+            line = fontRenderer.drawString(s, x + 3, y + 1 + this.getHeight() / 2 - fontRenderer.FONT_HEIGHT / 2, LLibrary.CONFIG.getTextColor());
         }
 
         boolean renderVerticalCursor = this.cursorPosition < this.text.length();
@@ -72,14 +72,14 @@ public abstract class InputElementBase<T extends IElementGUI> extends Element<T>
         }
 
         if (!displayString.isEmpty() && verticalCursor && cursor < displayString.length()) {
-            fontRenderer.drawString(displayString.substring(cursor), line + 1, y + 1 + this.getHeight() / 2 - fontRenderer.FONT_HEIGHT / 2, LLibrary.CONFIG.getTextColor(), false);
+            fontRenderer.drawString(displayString.substring(cursor), line + 1, y + 1 + this.getHeight() / 2 - fontRenderer.FONT_HEIGHT / 2, LLibrary.CONFIG.getTextColor());
         }
 
         if (renderCursor) {
             if (renderVerticalCursor) {
                 this.drawRectangle(lineX, y, 1, this.getHeight() / 2 - fontRenderer.FONT_HEIGHT / 2 + 1 + fontRenderer.FONT_HEIGHT, LLibrary.CONFIG.getPrimaryColor());
             } else {
-                fontRenderer.drawString("_", cursor == 0 ? lineX + 3 : lineX, y + 1 + this.getHeight() / 2 - fontRenderer.FONT_HEIGHT / 2, LLibrary.CONFIG.getPrimaryColor(), false);
+                fontRenderer.drawString("_", cursor == 0 ? lineX + 3 : lineX, y + 1 + this.getHeight() / 2 - fontRenderer.FONT_HEIGHT / 2, LLibrary.CONFIG.getPrimaryColor());
             }
         }
 
@@ -397,10 +397,10 @@ public abstract class InputElementBase<T extends IElementGUI> extends Element<T>
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        GlStateManager.color(0.0F, 0.0F, 255.0F, 255.0F);
+        GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
         GlStateManager.disableTexture2D();
         GlStateManager.enableColorLogic();
-        GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE);
+        GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
         buffer.pos((double) startX, (double) endY, 0.0D).endVertex();
         buffer.pos((double) endX, (double) endY, 0.0D).endVertex();

@@ -3,8 +3,8 @@ package net.ilexiconn.llibrary.client.gui.element;
 import net.ilexiconn.llibrary.LLibrary;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ public class WindowElement<T extends IElementGUI> extends Element<T> {
         this.drawRectangle(this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight(), LLibrary.CONFIG.getPrimaryColor());
         this.drawRectangle(this.getPosX(), this.getPosY(), this.getWidth(), 14, LLibrary.CONFIG.getAccentColor());
         FontRenderer fontRenderer = this.gui.getFontRenderer();
-        fontRenderer.drawString(this.name, this.getPosX() + 2.0F, this.getPosY() + 3.0F, LLibrary.CONFIG.getTextColor(), false);
+        fontRenderer.drawString(this.name, this.getPosX() + 2.0F, this.getPosY() + 3.0F, LLibrary.CONFIG.getTextColor());
         for (Element<T> element : this.elementList) {
             element.render(mouseX, mouseY, partialTicks);
         }

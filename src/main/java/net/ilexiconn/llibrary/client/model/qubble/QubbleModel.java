@@ -55,33 +55,33 @@ public class QubbleModel implements INBTSerializable<NBTTagCompound> {
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound compound = new NBTTagCompound();
-        compound.setString("name", this.name);
-        compound.setString("author", this.author);
-        compound.setInt("version", this.version);
+        compound.putString("name", this.name);
+        compound.putString("author", this.author);
+        compound.putInt("version", this.version);
         if (this.textureWidth != 64 || this.textureHeight != 32) {
             NBTTagCompound textureTag = new NBTTagCompound();
-            textureTag.setInt("width", this.textureWidth);
-            textureTag.setInt("height", this.textureHeight);
-            compound.setTag("texture", textureTag);
+            textureTag.putInt("width", this.textureWidth);
+            textureTag.putInt("height", this.textureHeight);
+            compound.put("texture", textureTag);
         }
         NBTTagList cuboidTag = new NBTTagList();
         for (QubbleCuboid cuboid : this.cuboids) {
             cuboidTag.add(cuboid.serializeNBT());
         }
-        compound.setTag("cuboids", cuboidTag);
+        compound.put("cuboids", cuboidTag);
         NBTTagList animationsTag = new NBTTagList();
         for (QubbleAnimation animation : this.animations) {
             animationsTag.add(animation.serializeNBT());
         }
-        compound.setTag("animations", animationsTag);
+        compound.put("animations", animationsTag);
         NBTTagList textures = new NBTTagList();
         for (Map.Entry<String, String> entry : this.textures.entrySet()) {
             NBTTagCompound texture = new NBTTagCompound();
-            texture.setString("key", entry.getKey());
-            texture.setString("value", entry.getValue());
+            texture.putString("key", entry.getKey());
+            texture.putString("value", entry.getValue());
             textures.add(texture);
         }
-        compound.setTag("textures", textures);
+        compound.put("textures", textures);
         return compound;
     }
 
@@ -90,7 +90,7 @@ public class QubbleModel implements INBTSerializable<NBTTagCompound> {
         this.name = compound.getString("name");
         this.author = compound.getString("author");
         this.version = compound.getInt("version");
-        if (compound.hasKey("texture")) {
+        if (compound.contains("texture")) {
             NBTTagCompound textureTag = compound.getCompound("texture");
             this.textureWidth = textureTag.getInt("width");
             this.textureHeight = textureTag.getInt("height");
@@ -104,11 +104,11 @@ public class QubbleModel implements INBTSerializable<NBTTagCompound> {
         for (int i = 0; i < animationsTag.size(); i++) {
             this.animations.add(QubbleAnimation.deserialize(animationsTag.getCompound(i)));
         }
-        if (compound.hasKey("textures")) {
+        if (compound.contains("textures")) {
             NBTTagList textures = compound.getList("textures", Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < textures.size(); i++) {
                 NBTTagCompound texture = textures.getCompound(i);
-                if (texture.hasKey("key") && texture.hasKey("value")) {
+                if (texture.contains("key") && texture.contains("value")) {
                     this.textures.put(texture.getString("key"), texture.getString("value"));
                 }
             }

@@ -64,7 +64,7 @@ public enum NBTHandler {
                     }
                     INBTBase tag = this.writeFieldToNBT(object, field);
                     if (tag != null) {
-                        compound.setTag(name, tag);
+                        compound.putTag(name, tag);
                     }
                 } else if (field.isAnnotationPresent(NBTMutatorProperty.class)) {
                     NBTMutatorProperty mutatorProperty = field.getAnnotation(NBTMutatorProperty.class);
@@ -76,7 +76,7 @@ public enum NBTHandler {
                     Method getter = this.getGetter(clazz, name, type, mutatorProperty.getter());
                     INBTBase tag = this.writeGetterValueToNBT(object, getter);
                     if (tag != null) {
-                        compound.setTag(name, tag);
+                        compound.putTag(name, tag);
                     }
                 }
             }

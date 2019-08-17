@@ -54,7 +54,7 @@ public class PartEntity extends Entity {
     }
 
     @Override
-    public void entityInit() {
+    public void registerData() {
 
     }
 
@@ -73,7 +73,7 @@ public class PartEntity extends Entity {
     }
 
     public void collideWithNearbyEntities() {
-        List<Entity> entities = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(0.20000000298023224D, 0.0D, 0.20000000298023224D));
+        List<Entity> entities = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getBoundingBox().expand(0.20000000298023224D, 0.0D, 0.20000000298023224D));
         entities.stream().filter(entity -> entity != this.parent && !(entity instanceof PartEntity) && entity.canBePushed()).forEach(entity -> entity.applyEntityCollision(this.parent));
     }
 

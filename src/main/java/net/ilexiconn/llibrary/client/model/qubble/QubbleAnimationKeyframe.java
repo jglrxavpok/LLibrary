@@ -38,13 +38,13 @@ public class QubbleAnimationKeyframe implements INBTSerializable<NBTTagCompound>
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound compound = new NBTTagCompound();
-        compound.setInt("duration", this.duration);
-        compound.setString("type", this.type.name());
+        compound.putInt("duration", this.duration);
+        compound.putString("type", this.type.name());
         NBTTagList actionsTag = new NBTTagList();
         for (QubbleAnimationAction action : this.actions) {
             actionsTag.add(action.serializeNBT());
         }
-        compound.setTag("actions", actionsTag);
+        compound.put("actions", actionsTag);
         return compound;
     }
 

@@ -8,11 +8,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 public class PropertiesMessage extends AbstractMessage<PropertiesMessage> {
     private String propertyID;
@@ -33,7 +34,7 @@ public class PropertiesMessage extends AbstractMessage<PropertiesMessage> {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void onClientReceived(Minecraft client, PropertiesMessage message, EntityPlayer player, MessageContext messageContext) {
+    public void onClientReceived(Minecraft client, PropertiesMessage message, EntityPlayer player, NetworkEvent.Context messageContext) {
         Entity entity = player.world.getEntityByID(message.entityID);
         if (entity != null) {
             IEntityData<?> extendedProperties = EntityDataHandler.INSTANCE.getEntityData(entity, message.propertyID);
@@ -46,21 +47,26 @@ public class PropertiesMessage extends AbstractMessage<PropertiesMessage> {
     }
 
     @Override
-    public void onServerReceived(MinecraftServer server, PropertiesMessage message, EntityPlayer player, MessageContext messageContext) {
+    public void onServerReceived(MinecraftServer server, PropertiesMessage message, EntityPlayer player, NetworkEvent.Context messageContext) {
 
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
-        this.propertyID = ByteBufUtils.readUTF8String(buf);
-        this.compound = ByteBufUtils.readTag(buf);
+    public boolean canSideReceive(Dist side) {
+        return side.isClient();
+    }
+
+    @Override
+    public void fromBytes(PacketBuffer buf) {
+        this.propertyID = buf.readString(2000);
+        this.compound = buf.readCompoundTag();
         this.entityID = buf.readInt();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeUTF8String(buf, this.propertyID);
-        ByteBufUtils.writeTag(buf, this.compound);
+    public void toBytes(PacketBuffer buf) {
+        buf.writeString(this.propertyID);
+        buf.writeCompoundTag(this.compound);
         buf.writeInt(this.entityID);
     }
 }

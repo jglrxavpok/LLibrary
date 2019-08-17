@@ -5,6 +5,8 @@ import net.ilexiconn.llibrary.LLibrary;
 import net.ilexiconn.llibrary.client.ClientProxy;
 import net.ilexiconn.llibrary.client.gui.element.Element;
 import net.ilexiconn.llibrary.client.gui.element.IElementGUI;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHelper;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -251,12 +253,11 @@ public abstract class ElementGUI extends GuiScreen implements IElementGUI {
     }
 
     public float getPreciseMouseX() {
-        ScaledResolution scaledResolution = new ScaledResolution(ClientProxy.MINECRAFT);
-        return (float) Mouse.getX() / scaledResolution.getScaleFactor();
+        return (float) Minecraft.getInstance().mouseHelper.getMouseX();
     }
 
     public float getPreciseMouseY() {
-        return this.height - (float) Mouse.getY() * this.height / (float) this.mc.displayHeight - 1.0F;
+        return (float) Minecraft.getInstance().mouseHelper.getMouseY();
     }
 
     public Object getElementLock() {

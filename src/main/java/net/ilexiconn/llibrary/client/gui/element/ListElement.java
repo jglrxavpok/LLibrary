@@ -2,11 +2,10 @@ package net.ilexiconn.llibrary.client.gui.element;
 
 import net.ilexiconn.llibrary.LLibrary;
 import net.ilexiconn.llibrary.client.ClientProxy;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Mouse;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -52,13 +51,13 @@ public class ListElement<T extends IElementGUI> extends Element<T> {
             float entryY = this.getPosY() + y + 1;
             float entryWidth = this.getWidth() - 6;
             boolean selected = this.isSelected(this.getPosX(), this.getPosY() + y, entryWidth, this.entryHeight, mouseX, mouseY) && !this.scrollbar.isScrolling();
-            boolean clickSelecting = selected && Mouse.isButtonDown(0);
+            boolean clickSelecting = selected && Minecraft.getInstance().mouseHelper.isLeftDown();
             if (this.selectedEntry == entryIndex) {
                 this.drawRectangle(entryX, entryY, entryWidth, this.entryHeight, clickSelecting ? LLibrary.CONFIG.getAccentColor() : LLibrary.CONFIG.getDarkAccentColor());
             } else {
                 this.drawRectangle(entryX, entryY, entryWidth, this.entryHeight, selected ? LLibrary.CONFIG.getAccentColor() : this.getColorScheme().getSecondaryColor());
             }
-            fontRenderer.drawString(entry, entryX + 2, (entryY - fontRenderer.FONT_HEIGHT / 2) + (this.entryHeight / 2), LLibrary.CONFIG.getTextColor(), false);
+            fontRenderer.drawString(entry, entryX + 2, (entryY - fontRenderer.FONT_HEIGHT / 2) + (this.entryHeight / 2), LLibrary.CONFIG.getTextColor());
             y += this.entryHeight;
             entryIndex++;
         }

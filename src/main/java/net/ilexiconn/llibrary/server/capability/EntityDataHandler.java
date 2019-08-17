@@ -2,6 +2,7 @@ package net.ilexiconn.llibrary.server.capability;
 
 import net.ilexiconn.llibrary.LLibrary;
 import net.minecraft.entity.Entity;
+import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -30,12 +31,12 @@ public enum EntityDataHandler {
      */
     @Deprecated
     public <T extends Entity> void registerExtendedEntityData(T entity, IEntityData<T> entityData) {
-        IEntityDataCapability dataCap = entity.getCapability(LLibrary.ENTITY_DATA_CAPABILITY, null);
-        if (dataCap == null) {
+        LazyOptional<IEntityDataCapability> dataCap = entity.getCapability(LLibrary.ENTITY_DATA_CAPABILITY, null);
+        if (!dataCap.isPresent()) {
             List<IEntityData> data = this.queuedEntityData.computeIfAbsent(entity, e -> new ArrayList<>());
             data.add(entityData);
         } else {
-            dataCap.registerData(entityData);
+            dataCap.ifPresent(it -> it.registerData(entityData));
         }
     }
 
@@ -47,11 +48,11 @@ public enum EntityDataHandler {
      */
     @Nullable
     public <T extends Entity> IEntityData<T> getEntityData(T entity, String identifier) {
-        IEntityDataCapability dataCap = entity.getCapability(LLibrary.ENTITY_DATA_CAPABILITY, null);
-        if (dataCap == null) {
+        LazyOptional<IEntityDataCapability> dataCap = entity.getCapability(LLibrary.ENTITY_DATA_CAPABILITY, null);
+        if (!dataCap.isPresent()) {
             throw new IllegalStateException("Cannot get entity data on entity without data cap");
         }
-        return dataCap.getData(identifier);
+        return dataCap.orElseThrow(IllegalStateException::new).getData(identifier);
     }
 
     /**
@@ -62,11 +63,11 @@ public enum EntityDataHandler {
      * @return a list with all the data managers, never null
      */
     public <T extends Entity> List<IEntityData<T>> getEntityData(T entity) {
-        IEntityDataCapability dataCap = entity.getCapability(LLibrary.ENTITY_DATA_CAPABILITY, null);
-        if (dataCap == null) {
+        LazyOptional<IEntityDataCapability> dataCap = entity.getCapability(LLibrary.ENTITY_DATA_CAPABILITY, null);
+        if (!dataCap.isPresent()) {
             throw new IllegalStateException("Cannot get entity data on entity without data cap");
         }
-        return dataCap.getData();
+        return dataCap.orElseThrow(IllegalStateException::new).getData();
     }
 
     @Deprecated
