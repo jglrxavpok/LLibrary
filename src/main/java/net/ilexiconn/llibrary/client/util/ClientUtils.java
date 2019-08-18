@@ -3,10 +3,15 @@ package net.ilexiconn.llibrary.client.util;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.ilexiconn.llibrary.client.ClientProxy;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * @author iLexiconn
@@ -14,6 +19,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  */
 @OnlyIn(Dist.CLIENT)
 public class ClientUtils {
+
+    private static final Method getPlayerInfo;
+
+    static {
+        getPlayerInfo = ObfuscationReflectionHelper.findMethod(AbstractClientPlayer.class, "func_");
+    }
+
     private static long lastUpdate = System.currentTimeMillis();
 
     /**
@@ -67,12 +79,23 @@ public class ClientUtils {
      */
     public static void setPlayerTexture(AbstractClientPlayer player, MinecraftProfileTexture.Type type, ResourceLocation texture) {
         if (player.hasPlayerInfo() && texture != null) {
-            player.getPlayerInfo().playerTextures.put(type, texture);
+            getPlayerInfo(player).playerTextures.put(type, texture);
         }
     }
 
     public static void setPlayerSkinType(AbstractClientPlayer player, String type) {
-        player.getPlayerInfo().skinType = type;
+        getPlayerInfo(player).skinType = type;
+    }
+
+    // using reflection because AbstractClientPlayer is an abstract class. Using an AT could break subclasses of AbstractClientPlayer
+    private static NetworkPlayerInfo getPlayerInfo(AbstractClientPlayer player) {
+        NetworkPlayerInfo playerInfo = null;
+        try {
+            playerInfo = (NetworkPlayerInfo) getPlayerInfo.invoke(player, new Object[0]);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return playerInfo;
     }
 
     public static void addPlayerSkinTypeRenderer(String type, RenderPlayer renderPlayer) {

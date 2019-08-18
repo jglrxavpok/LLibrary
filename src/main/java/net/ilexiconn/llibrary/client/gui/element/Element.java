@@ -3,7 +3,6 @@ package net.ilexiconn.llibrary.client.gui.element;
 import net.ilexiconn.llibrary.LLibrary;
 import net.ilexiconn.llibrary.client.ClientProxy;
 import net.ilexiconn.llibrary.client.gui.element.color.ColorScheme;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -258,7 +257,7 @@ public class Element<T extends IElementGUI> {
 
     protected void startScissor() {
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        float scaleFactor = new ScaledResolution(ClientProxy.MINECRAFT).getScaleFactor();
+        float scaleFactor = (float) ClientProxy.MINECRAFT.mainWindow.getGuiScaleFactor();
         GL11.glScissor((int) (this.posX * scaleFactor), (int) ((this.gui.getHeight() - (this.posY + this.height)) * scaleFactor), (int) (this.width * scaleFactor), (int) (this.height * scaleFactor));
     }
 

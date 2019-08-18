@@ -14,12 +14,14 @@ import net.ilexiconn.llibrary.server.world.WorldDataHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -30,6 +32,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+import javax.management.remote.rmi._RMIConnection_Stub;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -89,11 +92,11 @@ public enum ServerEventHandler {
     @SubscribeEvent
     public void onPlayerClone(PlayerEvent.Clone event) {
         NBTTagCompound compound = new NBTTagCompound();
-        IEntityDataCapability originalCap = event.getOriginal().getCapability(LLibrary.ENTITY_DATA_CAPABILITY, null);
-        IEntityDataCapability newCap = event.getEntityPlayer().getCapability(LLibrary.ENTITY_DATA_CAPABILITY, null);
-        if (originalCap != null && newCap != null) {
-            originalCap.saveToNBT(compound);
-            newCap.loadFromNBT(compound);
+        LazyOptional<IEntityDataCapability> originalCap = event.getOriginal().getCapability(LLibrary.ENTITY_DATA_CAPABILITY, null);
+        LazyOptional<IEntityDataCapability> newCap = event.getEntityPlayer().getCapability(LLibrary.ENTITY_DATA_CAPABILITY, null);
+        if (originalCap.isPresent() && newCap.isPresent()) {
+            originalCap.ifPresent(cap -> cap.saveToNBT(compound));
+            newCap.ifPresent(cap -> cap.loadFromNBT(compound));
         }
     }
 
@@ -157,7 +160,8 @@ public enum ServerEventHandler {
                 while (iterator.hasNext()) {
                     Map.Entry<EntityPlayerMP, List<PropertiesTracker<?>>> trackerEntry = iterator.next();
                     EntityPlayerMP player = trackerEntry.getKey();
-                    WorldServer playerWorld = DimensionManager.getWorld(player.dimension);
+                    MinecraftServer server = player != null ? player.getServerWorld().getServer() : null;
+                    WorldServer playerWorld = player != null ? DimensionManager.getWorld(server, player.dimension, false, false) : null;
                     if (player == null || !player.isAlive() || playerWorld == null || !playerWorld.loadedEntityList.contains(player)) {
                         trackerEntry.getValue().forEach(PropertiesTracker::removeTracker);
                         iterator.remove();
@@ -166,7 +170,7 @@ public enum ServerEventHandler {
                         while (it.hasNext()) {
                             PropertiesTracker tracker = it.next();
                             Entity entity = tracker.getEntity();
-                            WorldServer entityWorld = DimensionManager.getWorld(entity.dimension);
+                            WorldServer entityWorld = DimensionManager.getWorld(server, entity.dimension, false, false);
                             if (entity == null || !entity.isAlive() || entityWorld == null || !entityWorld.loadedEntityList.contains(entity)) {
                                 it.remove();
                                 tracker.removeTracker();

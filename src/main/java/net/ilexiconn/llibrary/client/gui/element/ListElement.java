@@ -2,6 +2,7 @@ package net.ilexiconn.llibrary.client.gui.element;
 
 import net.ilexiconn.llibrary.LLibrary;
 import net.ilexiconn.llibrary.client.ClientProxy;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -42,8 +43,8 @@ public class ListElement<T extends IElementGUI> extends Element<T> {
         FontRenderer fontRenderer = this.gui.getFontRenderer();
         float y = -this.scrollbar.getScrollOffset();
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        ScaledResolution scaledResolution = new ScaledResolution(ClientProxy.MINECRAFT);
-        int scaleFactor = scaledResolution.getScaleFactor();
+        MainWindow scaledResolution = ClientProxy.MINECRAFT.mainWindow;
+        int scaleFactor = (int) scaledResolution.getGuiScaleFactor();
         GL11.glScissor((int) (this.getPosX() * scaleFactor), (int) ((this.gui.getHeight() - (this.getPosY() + this.getHeight()) + 2) * scaleFactor), this.getWidth() * scaleFactor, (this.getHeight() - 4) * scaleFactor);
         int entryIndex = 0;
         for (String entry : this.entries) {

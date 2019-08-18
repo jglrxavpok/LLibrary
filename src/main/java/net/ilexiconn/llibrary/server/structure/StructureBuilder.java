@@ -126,12 +126,12 @@ public class StructureBuilder extends StructureGenerator {
                         Axis axis = state.get(BlockLog.AXIS);
                         EnumFacing facing = axis == Axis.X ? EnumFacing.EAST : axis == Axis.Y ? EnumFacing.UP : EnumFacing.SOUTH;
                         EnumFacing transformed = transform(facing, frontVec, topVec, perpVec);
-                        state = state.with(BlockLog.AXIS, Axis.fromFacingAxis(transformed.getAxis()));
+                        state = state.with(BlockLog.AXIS, EnumFacing.getFacingFromAxis(EnumFacing.AxisDirection.POSITIVE, transformed.getAxis()).getAxis());
                     } else {
                         for (IProperty prop : state.getProperties()) {
-                            if (prop instanceof PropertyDirection) {
-                                PropertyDirection propDir = (PropertyDirection) prop;
-                                EnumFacing facing = state.get(propDir);
+                            if (prop instanceof EnumProperty && prop.getValueClass() == EnumFacing.class) {
+                                EnumProperty propDir = (EnumProperty) prop;
+                                EnumFacing facing = (EnumFacing) state.get(propDir);
                                 EnumFacing newFacing = transform(facing, frontVec, topVec, perpVec);
                                 if (propDir.getAllowedValues().contains(newFacing)) {
                                     state = state.with(propDir, newFacing);
@@ -167,8 +167,8 @@ public class StructureBuilder extends StructureGenerator {
             throw new IllegalArgumentException("Must be horizontal facing: " + facing);
         }
         int idx = facing.getHorizontalIndex() - (this.front.getAxis() == Axis.Y ? this.top.getHorizontalIndex() : this.front.getHorizontalIndex()) - 1;
-        idx = (idx % EnumFacing.BY_HORIZONTAL_INDEX.length + EnumFacing.BY_HORIZONTAL_INDEX.length) % EnumFacing.BY_HORIZONTAL_INDEX.length;
-        return this.rotate(EnumFacing.BY_HORIZONTAL_INDEX[idx], EnumFacing.UP);
+        idx = (idx % EnumFacing.BY_HORIZONTAL_INDEX.length + EnumFacing.BY_HORIZONTAL_INDEX.length);
+        return this.rotate(EnumFacing.byHorizontalIndex(idx), EnumFacing.UP);
     }
 
     public StructureBuilder startComponent() {

@@ -12,6 +12,7 @@ import net.minecraft.util.SharedConstants;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 @OnlyIn(Dist.CLIENT)
@@ -124,26 +125,26 @@ public abstract class InputElementBase<T extends IElementGUI> extends Element<T>
             Minecraft.getInstance().keyboardListener.setClipboardString(this.getSelectedText());
             this.writeText("");
             return true;
-        } else if (key == Keyboard.KEY_RETURN) {
+        } else if (key == GLFW.GLFW_KEY_ENTER) {
             this.onSubmit();
             return true;
         } else {
             switch (key) {
-                case Keyboard.KEY_BACK:
+                case GLFW.GLFW_KEY_BACKSPACE:
                     if (GuiScreen.isCtrlKeyDown()) {
                         this.deleteWords(-1);
                     } else {
                         this.deleteFromCursor(-1);
                     }
                     return true;
-                case Keyboard.KEY_HOME:
+                case GLFW.GLFW_KEY_HOME:
                     if (GuiScreen.isShiftKeyDown()) {
                         this.setSelectionPos(0);
                     } else {
                         this.setCursorPositionZero();
                     }
                     return true;
-                case Keyboard.KEY_LEFT:
+                case GLFW.GLFW_KEY_LEFT:
                     if (GuiScreen.isShiftKeyDown()) {
                         if (GuiScreen.isCtrlKeyDown()) {
                             this.setSelectionPos(this.getNthWordFromPos(-1, this.selectionEnd));
@@ -156,7 +157,7 @@ public abstract class InputElementBase<T extends IElementGUI> extends Element<T>
                         this.moveCursorBy(-1);
                     }
                     return true;
-                case Keyboard.KEY_RIGHT:
+                case GLFW.GLFW_KEY_RIGHT:
                     if (GuiScreen.isShiftKeyDown()) {
                         if (GuiScreen.isCtrlKeyDown()) {
                             this.setSelectionPos(this.getNthWordFromPos(1, this.selectionEnd));
@@ -169,14 +170,14 @@ public abstract class InputElementBase<T extends IElementGUI> extends Element<T>
                         this.moveCursorBy(1);
                     }
                     return true;
-                case Keyboard.KEY_END:
+                case GLFW.GLFW_KEY_END:
                     if (GuiScreen.isShiftKeyDown()) {
                         this.setSelectionPos(this.text.length());
                     } else {
                         this.setCursorPositionEnd();
                     }
                     return true;
-                case Keyboard.KEY_DELETE:
+                case GLFW.GLFW_KEY_DELETE:
                     if (GuiScreen.isCtrlKeyDown()) {
                         this.deleteWords(1);
                     } else {

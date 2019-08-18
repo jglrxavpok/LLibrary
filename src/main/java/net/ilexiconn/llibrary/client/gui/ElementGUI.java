@@ -2,22 +2,19 @@ package net.ilexiconn.llibrary.client.gui;
 
 import com.google.common.collect.Lists;
 import net.ilexiconn.llibrary.LLibrary;
-import net.ilexiconn.llibrary.client.ClientProxy;
 import net.ilexiconn.llibrary.client.gui.element.Element;
 import net.ilexiconn.llibrary.client.gui.element.IElementGUI;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.MouseHelper;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.init.SoundEvents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.glfw.GLFW;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +31,7 @@ public abstract class ElementGUI extends GuiScreen implements IElementGUI {
 
     private final List<Element> elements = new ArrayList<>();
     private Element currentlyClicking;
+    private long lastClick = System.currentTimeMillis();
 
     protected abstract void initElements();
 
@@ -103,7 +101,7 @@ public abstract class ElementGUI extends GuiScreen implements IElementGUI {
 
     @Override
     public void playClickSound() {
-        this.mc.getSoundHandler().play(SimpleSound.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0f));
+        this.mc.getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0f));
     }
 
     @Override
@@ -171,6 +169,7 @@ public abstract class ElementGUI extends GuiScreen implements IElementGUI {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+        lastClick = System.currentTimeMillis();
         float preciseMouseX = this.getPreciseMouseX();
         float preciseMouseY = this.getPreciseMouseY();
         boolean consumed = false;
@@ -190,25 +189,26 @@ public abstract class ElementGUI extends GuiScreen implements IElementGUI {
     }
 
     @Override
-    public boolean mouseDragged(double p_mouseDragged_1_, double p_mouseDragged_3_, int p_mouseDragged_5_, double p_mouseDragged_6_, double p_mouseDragged_8_) {
-        return super.mouseDragged(p_mouseDragged_1_, p_mouseDragged_3_, p_mouseDragged_5_, p_mouseDragged_6_, p_mouseDragged_8_);
-    }
-
-    @Override
-    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+    public boolean mouseDragged(double x, double y, int clickedMouseButton, double dx, double dy) {
+        boolean consumed = false;
         float preciseMouseX = this.getPreciseMouseX();
         float preciseMouseY = this.getPreciseMouseY();
         synchronized (this.elementLock) {
             List<Element> elements = this.getPostOrderElements();
             for (Element element : elements) {
                 if (element.isVisible() && element.isEnabled() && this.currentlyClicking == element) {
-                    if (element.mouseDragged(preciseMouseX, preciseMouseY, clickedMouseButton, timeSinceLastClick)) {
+                    if (element.mouseDragged(preciseMouseX, preciseMouseY, clickedMouseButton, timeSinceLastClick())) {
+                        consumed = true;
                         break;
                     }
                 }
             }
         }
-        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+        return super.mouseDragged(x, y, clickedMouseButton, dx, dy) || consumed;
+    }
+
+    private long timeSinceLastClick() {
+        return System.currentTimeMillis()-lastClick;
     }
 
     @Override

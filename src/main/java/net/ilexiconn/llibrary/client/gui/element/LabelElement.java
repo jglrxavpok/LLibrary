@@ -15,7 +15,7 @@ public class LabelElement<T extends IElementGUI> extends Element<T> {
 
     @Override
     public void render(float mouseX, float mouseY, float partialTicks) {
-        this.gui.getFontRenderer().drawString(this.text, this.getPosX(), this.getPosY(), LLibrary.CONFIG.getTextColor(), false);
+        this.gui.getFontRenderer().drawString(this.text, this.getPosX(), this.getPosY(), LLibrary.CONFIG.getTextColor());
     }
 }
 

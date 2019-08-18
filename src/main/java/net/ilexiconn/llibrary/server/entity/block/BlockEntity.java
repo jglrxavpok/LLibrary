@@ -8,6 +8,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ITickable;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 /**
  * @author iLexiconn
@@ -34,8 +35,8 @@ public abstract class BlockEntity extends TileEntity implements ITickable {
             if (!compound.equals(this.lastCompound)) {
                 if (!this.world.isRemote) {
                     this.onSync();
-                    NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(this.world.provider.getDimension(), this.pos.getX(), this.pos.getY(), this.pos.getZ(), 0);
-                    LLibrary.NETWORK_WRAPPER.sendToAllTracking(new BlockEntityMessage(this), point);
+                    PacketDistributor.TargetPoint point = new PacketDistributor.TargetPoint(this.pos.getX(), this.pos.getY(), this.pos.getZ(), 0, this.world.getDimension().getType());
+                    LLibrary.NETWORK_WRAPPER.send(PacketDistributor.NEAR.with(() -> point), point);
                 }
                 this.lastCompound = compound;
             }

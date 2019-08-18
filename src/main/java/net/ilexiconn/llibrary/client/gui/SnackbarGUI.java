@@ -4,9 +4,9 @@ import net.ilexiconn.llibrary.client.ClientEventHandler;
 import net.ilexiconn.llibrary.client.ClientProxy;
 import net.ilexiconn.llibrary.client.util.ClientUtils;
 import net.ilexiconn.llibrary.server.snackbar.Snackbar;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -38,7 +38,7 @@ public class SnackbarGUI extends Gui {
     public void drawSnackbar() {
         GlStateManager.pushMatrix();
         GL11.glTranslatef(0.0F, 0.0F, 500.0F);
-        ScaledResolution resolution = new ScaledResolution(Minecraft.getInstance());
+        MainWindow resolution = Minecraft.getInstance().mainWindow;
         switch (this.snackbar.getPosition()) {
             case UP:
                 GlStateManager.translatef(0.0F, -this.yOffset, 0.0F);

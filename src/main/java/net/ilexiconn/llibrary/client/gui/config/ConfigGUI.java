@@ -16,8 +16,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -77,7 +75,7 @@ public class ConfigGUI extends ElementGUI {
             return true;
         }).withColorScheme(this.getReturnButtonColorScheme()));
         this.addElement(new LabelElement<>(this, this.parentName, 35, 6));
-        this.addElement(new LabelElement<>(this, this.mod.name().toUpperCase() + " SETTINGS", 35, 26));
+        this.addElement(new LabelElement<>(this, this.mod.value().toUpperCase() + " SETTINGS", 35, 26));
         ListElement<ConfigGUI> categoryList = (ListElement<ConfigGUI>) new ListElement<>(this, 0, 40, 120, this.height - 40, this.categories.stream().map(ConfigCategory::getName).collect(Collectors.toList()), 20, list -> {
             this.selectedCategory = this.categories.get(list.getSelectedIndex());
             this.propertyElements.values().forEach(this::removeElement);
@@ -133,7 +131,7 @@ public class ConfigGUI extends ElementGUI {
 
     @Override
     public void onGuiClosed() {
-        MinecraftForge.EVENT_BUS.post(new ConfigChangedEvent.OnConfigChangedEvent(this.mod.modid(), null, this.mc.world != null, false));
+        MinecraftForge.EVENT_BUS.post(new ConfigChangedEvent.OnConfigChangedEvent(this.mod.value(), null, this.mc.world != null, false));
         super.onGuiClosed();
     }
 

@@ -2,6 +2,7 @@ package net.ilexiconn.llibrary.server.entity.multipart;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.api.distmarker.Dist;
@@ -18,8 +19,8 @@ public class PartEntity extends Entity {
 
     protected float damageMultiplier;
 
-    public PartEntity(EntityLiving parent, float radius, float angleYaw, float offsetY, float sizeX, float sizeY, float damageMultiplier) {
-        super(parent.getEntityWorld());
+    public PartEntity(EntityType<PartEntity> type,  EntityLiving parent, float radius, float angleYaw, float offsetY, float sizeX, float sizeY, float damageMultiplier) {
+        super(type, parent.getEntityWorld());
         this.setSize(sizeX, sizeY);
         this.parent = parent;
 

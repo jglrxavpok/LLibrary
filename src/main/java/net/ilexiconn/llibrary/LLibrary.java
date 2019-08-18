@@ -25,7 +25,10 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,11 +74,12 @@ public class LLibrary {
 
     private LLibrary() {
         INSTANCE = this;
-
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onPreInit);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onPostInit);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onFingerprintViolation);
     }
 
-    @Mod.EventHandler
-    public void onPreInit(FMLPreInitializationEvent event) {
+    public void onPreInit(FMLCommonSetupEvent event) {
         if (!LLibrary.LLIBRARY_ROOT.exists()) {
             LLibrary.LLIBRARY_ROOT.mkdirs();
         }
@@ -84,19 +88,18 @@ public class LLibrary {
         ModList.get().getAllScanData().forEach(NetworkHandler.INSTANCE::injectNetworkChannels);
         LLibrary.CONFIG.load();
         LLibrary.PROXY.onPreInit();
+
+        onInit(event);
     }
 
-    @Mod.EventHandler
-    public void onInit(FMLInitializationEvent event) {
+    public void onInit(FMLCommonSetupEvent event) {
         LLibrary.PROXY.onInit();
     }
 
-    @Mod.EventHandler
-    public void onPostInit(FMLPostInitializationEvent event) {
+    public void onPostInit(FMLLoadCompleteEvent event) {
         LLibrary.PROXY.onPostInit();
     }
 
-    @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
         LOGGER.warn("Detected invalid fingerprint for file {}! You will not receive support with this tampered version of llibrary!", event.getSource().getName());
     }

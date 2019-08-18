@@ -26,7 +26,7 @@ public class ModUtils {
     private static final Map<String, ModContainer> resourceIDToContainerMap = new HashMap<>();
 
     static {
-        resourceIDToContainerMap.put("minecraft", Loader.instance().getMinecraftModContainer());
+        resourceIDToContainerMap.put("minecraft", ModList.get().getModContainerById("minecraft").get());
         Map<String, ModContainer> map = ModList.get().getMods().stream()
                 .map(info -> ModList.get().getModContainerById(info.getModId()))
                 .collect(Collectors.toMap(modContainer -> modContainer.get().getModId(), Optional::get));

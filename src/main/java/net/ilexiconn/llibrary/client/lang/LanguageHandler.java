@@ -6,16 +6,9 @@ import net.ilexiconn.llibrary.server.core.plugin.LLibraryPlugin;
 import net.minecraft.util.text.translation.LanguageMap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.ModList;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,20 +40,20 @@ public enum LanguageHandler {
         for (File child : cacheDir.listFiles()) {
             if (child.isFile()) {
                 try (FileInputStream cachedStream = new FileInputStream(child)) {
-                    Map<String, String> lang = LanguageMap.parseLangFile(cachedStream);
+                    Map<String, String> lang = (new Gson()).fromJson(new InputStreamReader(cachedStream), Map.class);
                     this.localizations.put(child.getName().substring(0, child.getName().length() - ".lang".length()), lang);
                 } catch (Exception e) {
                     LLibraryPlugin.LOGGER.error("An exception occurred while loading {} from cache.", child.getName(), e);
                 }
             }
         }
-        for (ModContainer mod : Loader.instance().getModList()) {
-            String modId = mod.getModId();
+        ModList.get().getMods().stream().forEach(modInfo -> {
+            String modId = modInfo.getModId();
             try {
                 RemoteLanguageContainer container = this.loadRemoteLocalization(modId);
                 if (container != null) {
                     for (RemoteLanguageContainer.LangContainer language : container.languages) {
-                        Map<String, String> lang = LanguageMap.parseLangFile(new URL(language.downloadURL).openStream());
+                        Map<String, String> lang = (new Gson()).fromJson(new InputStreamReader(new URL(language.downloadURL).openStream()), Map.class);
                         String locale = language.locale;
                         if (this.localizations.containsKey(locale)) {
                             lang.putAll(this.localizations.get(locale));
@@ -71,7 +64,7 @@ public enum LanguageHandler {
             } catch (Exception e) {
                 LLibraryPlugin.LOGGER.error("An exception occurred while loading remote lang container for {}", modId, e);
             }
-        }
+        });
         for (Map.Entry<String, Map<String, String>> entry : this.localizations.entrySet()) {
             String language = entry.getKey();
             File cache = new File(cacheDir, language + ".lang");

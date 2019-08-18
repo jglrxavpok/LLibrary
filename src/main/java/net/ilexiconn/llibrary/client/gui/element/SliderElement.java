@@ -5,7 +5,6 @@ import net.ilexiconn.llibrary.client.ClientProxy;
 import net.ilexiconn.llibrary.server.property.IFloatRangeProperty;
 import net.ilexiconn.llibrary.server.property.IStringProperty;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -58,7 +57,7 @@ public class SliderElement<T extends IElementGUI, P extends IFloatRangeProperty 
         this.drawRectangle(posX + width - 7 - this.sliderWidth, posY + 8, 3, 1, textColor);
         this.drawRectangle(posX + width - 6 - this.sliderWidth, posY + 9, 1, 1, textColor);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        float scaleFactor = new ScaledResolution(ClientProxy.MINECRAFT).getScaleFactor();
+        float scaleFactor = (float) ClientProxy.MINECRAFT.mainWindow.getGuiScaleFactor();
         GL11.glScissor((int) (posX * scaleFactor), (int) ((this.gui.getHeight() - (posY + height)) * scaleFactor), (int) ((width - 11) * scaleFactor), (int) (height * scaleFactor));
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         if (this.hasSlider) {
